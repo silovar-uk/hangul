@@ -1,0 +1,73 @@
+.result-shell { position: relative; }
+.result-card { position: relative; width: min(100%, 760px); margin: 32px auto 0; padding: 30px; border: 1px solid var(--line); border-radius: 30px; background: var(--surface); box-shadow: var(--shadow); text-align: center; }
+.result-rank { display: grid; place-items: center; width: 92px; height: 92px; margin: 0 auto 14px; border-radius: 28px; background: var(--yellow); transform: rotate(-4deg); box-shadow: 0 10px 24px rgba(230,184,34,.22); }
+.result-rank small { font-size: 8px; font-weight: 950; letter-spacing: .1em; }
+.result-rank strong { margin-top: -4px; font-size: 40px; line-height: 1; }
+.rank-d .result-rank, .rank-c .result-rank { background: #ddd6c9; }
+.rank-a .result-rank, .rank-s .result-rank { background: var(--yellow); }
+.result-eyebrow { color: var(--accent); font-size: 9px; font-weight: 950; letter-spacing: .13em; }
+.result-card h1 { margin: 5px 0 0; font-size: clamp(27px, 5vw, 38px); letter-spacing: -.055em; }
+.result-card > p { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
+.result-stats, .stats-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin: 22px 0; }
+.result-stat { padding: 13px 8px; border-radius: 16px; background: #f1ebe1; }
+.result-stat span { display: block; color: var(--muted); font-size: 8px; font-weight: 900; }
+.result-stat strong { display: block; margin-top: 4px; font-size: 18px; letter-spacing: -.035em; }
+.daily-result { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 7px 12px; padding: 14px; border-radius: 17px; background: #eee9df; text-align: left; }
+.daily-result.is-complete { background: #eaf6d0; }
+.daily-result div:first-child span { display: block; color: var(--muted); font-size: 8px; font-weight: 900; }
+.daily-result div:first-child strong { display: block; margin-top: 2px; font-size: 13px; }
+.daily-result > b { grid-row: 1 / 3; grid-column: 2; font-size: 16px; }
+.daily-result-track { overflow: hidden; height: 7px; border-radius: 999px; background: rgba(23,26,43,.09); }
+.daily-result-track span { display: block; height: 100%; border-radius: inherit; background: var(--lime); }
+.growth-panel, .weak-list, .achievement-unlocks, .achievement-gallery { margin-top: 15px; padding: 16px; border-radius: 18px; text-align: left; }
+.growth-panel { background: #eef6ff; }
+.growth-panel h3, .weak-list h3, .achievement-unlocks h3, .achievement-gallery h2 { margin: 0; font-size: 12px; }
+.growth-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.growth-list div { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 5px; padding: 10px; border-radius: 13px; background: #fff; }
+.growth-list b { font-size: 23px; }
+.growth-list span { font-size: 10px; font-weight: 900; }
+.growth-list em { color: #3f78aa; font-size: 11px; font-style: normal; font-weight: 950; }
+.growth-list small { grid-column: 2 / 4; color: var(--muted); font-size: 8px; }
+.weak-list { display: grid; grid-template-columns: auto 1fr; gap: 14px; background: #fff3c9; }
+.weak-list p { margin: 4px 0 0; color: var(--muted); font-size: 9px; }
+.weak-tags { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
+.weak-tag { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 10px; background: #fff; font-size: 10px; font-weight: 900; }
+.weak-tag b { font-size: 17px; }
+.perfect-panel { margin-top: 15px; padding: 14px; border-radius: 16px; background: #eaf6d0; font-size: 11px; font-weight: 900; }
+.achievement-unlocks { background: #f2edff; }
+.achievement-unlocks h3 { margin-bottom: 9px; }
+.achievement-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 13px; background: #fff; }
+.achievement-card + .achievement-card { margin-top: 7px; }
+.achievement-card > span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; background: #eee8ff; }
+.achievement-card strong, .achievement-card small { display: block; }
+.achievement-card strong { font-size: 11px; }
+.achievement-card small { margin-top: 2px; color: var(--muted); font-size: 8px; }
+.result-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 19px; }
+.confetti { position: absolute; inset: 58px 0 auto; height: 260px; pointer-events: none; overflow: hidden; }
+.confetti i { position: absolute; left: calc((var(--i) + 1) * 5.2%); top: -10px; width: 8px; height: 16px; border-radius: 3px; background: hsl(calc(var(--i) * 47deg), 75%, 62%); transform: rotate(calc(var(--i) * 23deg)); animation: confettiFall 1.8s calc(var(--i) * .03s) ease-out both; }
+
+.stats-page { width: min(100%, 860px); }
+.stats-hero { margin: 28px 0 8px; }
+.stats-hero h1 { margin: 3px 0 0; font-size: 36px; letter-spacing: -.055em; }
+.stats-hero p { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
+.stats-summary { margin: 18px 0; }
+.stats-toolbar { display: flex; justify-content: space-between; margin-bottom: 13px; }
+.stats-table { display: grid; gap: 9px; }
+.stats-row { display: grid; grid-template-columns: 68px 1fr auto; align-items: center; gap: 12px; padding: 13px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+.stats-hangul { font-size: 27px; font-weight: 950; text-align: center; }
+.stats-info > div { display: flex; align-items: center; gap: 7px; }
+.stats-info strong { font-size: 12px; }
+.stats-info > span { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; }
+.stats-status { padding: 3px 6px; border-radius: 999px; font-size: 7px; font-weight: 950; }
+.status-rival { background: #ffe7e4; color: var(--accent-dark); }
+.status-learning { background: #fff1b9; color: #886518; }
+.status-master { background: #eaf6d0; color: #5a7b24; }
+.stats-meter { width: 125px; }
+.stats-meter .progress-track { margin: 0; background: #ebe4da; }
+.stats-meter .progress-fill { background: var(--lime); }
+.stats-meter small { display: block; margin-top: 4px; color: var(--muted); font-size: 8px; text-align: right; }
+.empty-state { display: grid; gap: 4px; padding: 26px; border: 1px dashed #c9c0b1; border-radius: 18px; color: var(--muted); text-align: center; }
+.empty-state b { color: var(--ink); font-size: 12px; }
+.empty-state span { font-size: 9px; }
+.achievement-gallery { background: #f2edff; }
+.achievement-gallery > div { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 11px; }
