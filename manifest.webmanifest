@@ -1,0 +1,17 @@
+{
+  "name": "ハングル・クエスト",
+  "short_name": "ハングル",
+  "description": "ハングルの読みを、短いゲームで身につける。",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f3ea",
+  "theme_color": "#151a2d",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
