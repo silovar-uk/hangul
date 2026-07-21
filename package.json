@@ -1,10 +1,10 @@
 {
   "name": "hangul-quest",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node --check app.js && node --check core.js && node --check data.js && node --check reference-panel.js && node --check audio-core.js && node --check audio-controller.js"
+    "check": "node --check app.js && node --check core.js && node --check data.js && node --check lexicon-data.js && node --check learning-hub.js && node --check reference-panel.js && node --check audio-core.js && node --check audio-controller.js"
   }
 }
