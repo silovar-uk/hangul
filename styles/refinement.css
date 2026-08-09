@@ -1,0 +1,620 @@
+/*
+ * Field Guide refinement layer
+ * Visual principle: borderless by default; frames only when they carry meaning.
+ * Direction: Playful Field Guide / Selective Frame / Field Guide Map.
+ */
+
+:root {
+  --paper: #f3efe6;
+  --surface: #fffdf8;
+  --surface-strong: #ffffff;
+  --line: #d6cfc2;
+  --line-soft: rgba(91, 82, 67, .16);
+  --muted: #6f716f;
+  --radius-xl: 24px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --shadow: 0 18px 48px rgba(31, 31, 45, .09);
+  --shadow-soft: none;
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.32), transparent 260px),
+    var(--paper);
+}
+
+.app-shell { width: min(100%, 980px); }
+
+/* ---------- Chrome: quieter, more editorial ---------- */
+.topbar {
+  margin-bottom: 24px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.brand-mark,
+.learning-brand > span {
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+.icon-button,
+.learning-close {
+  border-color: var(--line-soft);
+  border-radius: 9px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.icon-button:hover,
+.learning-close:hover { background: rgba(255,255,255,.55); }
+
+/* ---------- Starter guide: content, not a card ---------- */
+.starter-guide {
+  margin-bottom: 24px;
+  padding: 4px 0 18px;
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.starter-steps { gap: 18px; }
+.starter-steps b {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+/* ---------- Hero: one intentionally expressive surface ---------- */
+.hero,
+.learning-hero {
+  border-radius: 24px;
+  box-shadow: 0 22px 54px rgba(23,26,43,.16);
+}
+
+.hero { padding: 32px 34px; }
+.hero::after { opacity: .8; }
+
+.quest-panel,
+.level-panel,
+.learning-path > div {
+  border-color: rgba(255,255,255,.12);
+  border-radius: 12px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.primary-button,
+.secondary-button,
+.mini-button,
+.audio-button,
+.audio-test-button {
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.primary-button:hover,
+.secondary-button:hover,
+.mini-button:hover,
+.audio-button:hover { transform: translateY(-1px); }
+
+/* ---------- Dashboard: reduce card soup ---------- */
+.dashboard-grid {
+  align-items: stretch;
+  margin: 28px 0 34px;
+  gap: 24px;
+}
+
+.rival-card {
+  padding: 20px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.rival-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--ink);
+}
+
+.rival-letter { font-size: 58px; }
+.rival-meter { height: 4px; background: #e5ded1; }
+
+.mini-stats {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.mini-stat {
+  min-height: 76px;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mini-stat:nth-child(odd) { border-right: 1px solid var(--line-soft); }
+.mini-stat:nth-last-child(-n+2) { border-bottom: 0; }
+
+.mini-stat-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: transparent;
+  border: 1px solid var(--line-soft);
+  font-size: 14px;
+}
+
+/* ---------- Practice config: an editorial section ---------- */
+.practice-config {
+  padding: 24px 0 28px;
+  border: 0;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.segment-control {
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  background: rgba(255,255,255,.26);
+}
+
+.segment-button { border-radius: 7px; }
+.segment-button.is-active {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* ---------- Field Guide Map ---------- */
+.stage-heading {
+  margin: 42px 0 8px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.stage-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  width: min(100%, 820px);
+  margin: 0 auto;
+}
+
+.stage-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px 64px minmax(0,1fr) auto;
+  gap: 16px;
+  min-height: 112px;
+  padding: 20px 0 24px;
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.stage-card:hover:not(:disabled) {
+  transform: none;
+  border-color: rgba(23,26,43,.36);
+  box-shadow: none;
+}
+
+.stage-card::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 81px;
+  top: 82px;
+  bottom: -24px;
+  width: 1px;
+  background: var(--line);
+  pointer-events: none;
+}
+
+.stage-card:last-child::after { display: none; }
+
+.stage-rail {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  display: block;
+  text-align: left;
+}
+
+.stage-rail span {
+  display: block;
+  color: #929086;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
+}
+
+.stage-rail i { display: none; }
+
+.stage-icon {
+  position: relative;
+  z-index: 2;
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgba(23,26,43,.08);
+  border-radius: 12px;
+  box-shadow: 0 0 0 7px var(--paper);
+  font-size: 25px;
+}
+
+.stage-body { min-width: 0; }
+.stage-card h3 { margin-top: 7px; font-size: 18px; }
+.stage-card p { max-width: 560px; font-size: 11px; }
+.stage-arrow { align-self: center; font-size: 16px; }
+
+.stage-topline { justify-content: flex-start; gap: 10px; }
+.stage-status {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: .12em;
+}
+
+.status-master { color: #5f7a30; }
+.status-cleared { color: #886518; }
+.status-open { color: var(--accent-dark); }
+
+.stage-stars { margin-left: auto; }
+.stage-progress-line > div { height: 3px; background: #e4ddd2; }
+.stage-progress-line small { font-size: 8px; }
+
+/* Current/open stage: selective frame. */
+.stage-card:has(.status-open) {
+  margin: 8px -18px;
+  width: calc(100% + 36px);
+  padding: 20px 18px 24px;
+  border: 1px solid rgba(23,26,43,.12);
+  border-radius: 14px;
+  background: rgba(255,253,248,.7);
+}
+
+.stage-card:has(.status-open)::before {
+  content: "CURRENT";
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  color: var(--accent-dark);
+  font-size: 7px;
+  font-weight: 950;
+  letter-spacing: .14em;
+}
+
+.stage-card:has(.status-open)::after {
+  left: 99px;
+  top: 90px;
+  bottom: -33px;
+}
+
+.stage-card:has(.status-open) .stage-icon {
+  box-shadow: 0 0 0 7px rgba(255,253,248,.92);
+}
+
+.stage-card:disabled {
+  opacity: .42;
+  filter: grayscale(.35);
+}
+
+.note-box {
+  margin-top: 24px;
+  padding: 12px 0 12px 15px;
+  border: 0;
+  border-left: 2px solid var(--line);
+  border-radius: 0;
+}
+
+/* ---------- Game: frames only for actual decisions ---------- */
+.close-button {
+  border-radius: 9px;
+  background: transparent;
+}
+
+.score-badge { border-radius: 9px; }
+.question-prompt {
+  border-radius: 16px;
+  box-shadow: none;
+  background: rgba(255,253,248,.72);
+}
+
+.choice-button {
+  border-width: 1px;
+  border-color: var(--line);
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.choice-button:hover:not(:disabled) {
+  border-color: rgba(23,26,43,.42);
+  background: rgba(255,255,255,.5);
+}
+
+.choice-button::before { border-radius: 5px; }
+
+.feedback {
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.feedback-mark { border-radius: 8px; }
+.feedback-parts i { border-radius: 5px; }
+
+/* ---------- Results and stats: read like a report, not a dashboard ---------- */
+.result-card {
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.result-rank {
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.result-stat {
+  padding: 12px 8px;
+  border-radius: 0;
+  background: transparent;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.daily-result,
+.growth-panel,
+.weak-list,
+.achievement-unlocks,
+.achievement-gallery,
+.perfect-panel {
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.growth-list div,
+.achievement-card { border-radius: 7px; }
+
+.stats-table { gap: 0; border-top: 1px solid var(--line-soft); }
+.stats-row {
+  padding: 15px 6px;
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  background: transparent;
+}
+
+.stats-status { background: transparent; padding: 0; }
+.empty-state { border-radius: 8px; }
+
+/* ---------- Reference: field guide / specimen sheet ---------- */
+.hangul-reference {
+  margin-top: 30px;
+  padding: 26px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.reference-count {
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.reference-tabs {
+  gap: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.reference-tabs button {
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+}
+
+.reference-tabs button.is-active {
+  background: transparent;
+  box-shadow: none;
+  border-bottom-color: var(--ink);
+}
+
+.reference-grid {
+  gap: 0;
+  border-top: 1px solid var(--line-soft);
+  border-left: 1px solid var(--line-soft);
+}
+
+.reference-card {
+  border: 0;
+  border-right: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  background: rgba(255,253,248,.26);
+}
+
+.combination-scroll {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.audio-button {
+  border-color: var(--line-soft);
+  background: transparent;
+}
+
+.audio-settings {
+  padding: 16px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+/* ---------- Learning hub: keep structure, remove decorative containers ---------- */
+.learning-expansion {
+  padding: 24px 0;
+  border: 0;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.learning-entry-card,
+.learning-mode-card,
+.learning-library-grid button {
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.learning-entry-card:hover,
+.learning-mode-card:hover,
+.learning-library-grid button:hover {
+  transform: none;
+  border-color: rgba(23,26,43,.35);
+  box-shadow: none;
+}
+
+.learning-entry-card--word,
+.learning-entry-card--phrase { background: rgba(255,253,248,.5); }
+
+.learning-entry-icon,
+.learning-mode-card-top > span { border-radius: 9px; }
+
+.learning-nav {
+  border-radius: 9px;
+  background: transparent;
+}
+.learning-nav button { border-radius: 6px; }
+
+.learning-setup-section {
+  padding: 20px 0;
+  border: 0;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  background: transparent;
+}
+
+.learning-step-card {
+  border-radius: 10px;
+  background: rgba(255,253,248,.45);
+}
+
+.learning-step-card.is-active {
+  box-shadow: none;
+  background: #fff7f4;
+}
+
+.learning-chip-row button,
+.learning-length-row button,
+.learning-filter-row button {
+  border-radius: 8px;
+}
+
+/* ---------- Dialogs ---------- */
+.dialog { border-radius: 14px; }
+.setting-row {
+  padding: 14px 0;
+  border-radius: 0;
+  background: transparent;
+  border-top: 1px solid var(--line-soft);
+}
+.storage-note { border-radius: 8px; }
+.toast,
+.audio-toast { border-radius: 8px; }
+
+@media (max-width: 780px) {
+  .dashboard-grid { gap: 18px; }
+  .stage-grid { width: 100%; }
+  .learning-expansion { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .topbar { margin-bottom: 18px; }
+  .hero { padding: 24px 20px; border-radius: 18px; }
+  .hero h1 { font-size: 32px; }
+  .quest-panel,
+  .level-panel { border-radius: 10px; }
+
+  .starter-guide { padding-bottom: 15px; }
+  .dashboard-grid { margin: 22px 0 28px; }
+  .mini-stat { padding: 12px 9px; }
+  .practice-config { padding: 20px 0 24px; }
+
+  .stage-heading { margin-top: 34px; }
+  .stage-card {
+    grid-template-columns: 25px 52px minmax(0,1fr) auto;
+    gap: 11px;
+    min-height: 98px;
+    padding: 17px 0 20px;
+  }
+  .stage-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    box-shadow: 0 0 0 6px var(--paper);
+    font-size: 21px;
+  }
+  .stage-card::after {
+    left: 62px;
+    top: 70px;
+    bottom: -20px;
+  }
+  .stage-card h3 { margin-top: 5px; font-size: 15px; }
+  .stage-card p { font-size: 9px; }
+  .stage-progress-line { margin-top: 7px; }
+  .stage-stars { display: none; }
+
+  .stage-card:has(.status-open) {
+    margin: 7px -10px;
+    width: calc(100% + 20px);
+    padding: 17px 10px 20px;
+    border-radius: 11px;
+  }
+  .stage-card:has(.status-open)::after {
+    left: 72px;
+    top: 75px;
+    bottom: -27px;
+  }
+
+  .question-prompt { border-radius: 13px; }
+  .choice-button { border-radius: 10px; }
+
+  .hangul-reference { padding-top: 20px; }
+  .reference-grid { grid-template-columns: repeat(3,1fr); }
+  .learning-hero { border-radius: 18px; }
+}
