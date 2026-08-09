@@ -1,41 +1,53 @@
 /*
- * Playable hierarchy
- * Order first, play second, one deliberate break in FIELD NOTES.
- * Structure = stable web app. Delight = quest, current stage, interaction.
+ * Hangul Quest — refined playable hierarchy
+ * 1. Hierarchy first: one strongest action, one current place.
+ * 2. One material language: restrained radii, shadows and weights.
+ * 3. Delight is concentrated: Hangul glyphs, current stage and interaction.
  */
 
+body:has(.home-shell.playable-home) {
+  background:
+    radial-gradient(circle at 7% -7%, rgba(255, 212, 94, .22), transparent 23rem),
+    radial-gradient(circle at 97% 3%, rgba(145, 202, 255, .13), transparent 21rem),
+    var(--paper);
+}
+
 .home-shell.playable-home {
-  --section-gap: 42px;
+  --section-gap: 40px;
+  --surface-radius: 18px;
+  --control-radius: 11px;
+  --soft-shadow: 0 10px 28px rgba(31,31,45,.065);
   width: min(100%, 980px);
 }
 
-/* ---------- System bar: quiet, clear, still playful ---------- */
+/* System bar — calm enough that the learning surface wins. */
 .home-shell .system-topbar {
-  min-height: 54px;
-  margin-bottom: 18px;
-  padding: 0 2px 12px;
-  border-bottom: 1px solid var(--line-soft);
+  min-height: 56px;
+  margin-bottom: 20px;
+  padding: 0 2px 13px;
+  border-bottom: 1px solid rgba(23,26,43,.075);
 }
 .home-shell .system-topbar .brand { gap: 10px; min-width: 0; }
 .home-shell .system-topbar .brand-mark {
-  width: 38px;
-  height: 38px;
+  width: 39px;
+  height: 39px;
   border-radius: 11px;
   background: var(--ink);
   color: #fff;
-  box-shadow: 0 6px 14px rgba(23,26,43,.12);
+  box-shadow: 0 5px 13px rgba(23,26,43,.11);
   font-size: 18px;
-  font-weight: 950;
+  font-weight: 800;
 }
 .home-shell .system-topbar .brand-text strong {
   display: block;
   font-size: 15px;
+  font-weight: 750;
   line-height: 1.2;
-  letter-spacing: -.035em;
+  letter-spacing: -.025em;
   white-space: nowrap;
 }
 .home-shell .system-topbar .brand-text small { display: none !important; }
-.home-shell .system-topbar .topbar-actions { gap: 4px; }
+.home-shell .system-topbar .topbar-actions { gap: 3px; }
 .home-shell .system-topbar .system-nav-button {
   display: grid;
   place-items: center;
@@ -50,55 +62,78 @@
   transition: background .14s ease, transform .14s ease;
 }
 .home-shell .system-topbar .system-nav-button:hover { background: rgba(23,26,43,.055); }
-.home-shell .system-topbar .system-nav-button:active { transform: scale(.94); background: rgba(23,26,43,.09); }
-.home-shell .system-topbar .system-nav-symbol { font-size: 14px; font-weight: 900; line-height: 1; }
+.home-shell .system-topbar .system-nav-button:active { background: rgba(23,26,43,.09); transform: scale(.95); }
+.home-shell .system-topbar .system-nav-symbol { font-size: 14px; font-weight: 800; line-height: 1; }
 
-/* ---------- Today: strongest surface ---------- */
+/* TODAY — strongest surface, but not a hero-within-a-hero. */
 .home-shell .quest-board,
 .home-shell .today-section.quest-board {
+  --quest-stage-color: var(--accent);
   position: relative;
   overflow: hidden;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(210px, 270px);
+  grid-template-columns: minmax(0, 1fr) minmax(205px, 255px);
   grid-template-areas:
     "copy progress"
     "actions progress";
-  gap: 24px 38px;
-  min-height: 248px;
+  gap: 22px 42px;
+  min-height: 242px;
   margin: 0;
   padding: 34px 36px 32px !important;
-  border: 1px solid rgba(23,26,43,.09) !important;
-  border-radius: 22px !important;
-  background: var(--surface) !important;
+  border: 1px solid rgba(23,26,43,.085) !important;
+  border-radius: var(--surface-radius) !important;
+  background:
+    radial-gradient(circle at 91% 3%, rgba(145,202,255,.11), transparent 12rem),
+    linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,253,248,.90)) !important;
   color: var(--ink) !important;
-  box-shadow: 0 14px 34px rgba(31,31,45,.08) !important;
+  box-shadow: var(--soft-shadow) !important;
 }
 .home-shell .quest-board::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 34px;
-  width: 72px;
-  height: 5px;
+  left: 35px;
+  width: 66px;
+  height: 4px;
   border-radius: 0 0 999px 999px;
-  background: var(--accent);
+  background: var(--quest-stage-color);
 }
-.home-shell .quest-board::after { display: none !important; }
+.home-shell .quest-board::after {
+  content: "";
+  position: absolute;
+  top: -92px;
+  right: -76px;
+  width: 190px;
+  height: 190px;
+  border: 1px solid rgba(23,26,43,.045);
+  border-radius: 50%;
+  pointer-events: none;
+}
 .home-shell .quest-board .hero-copy-block {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   grid-area: copy;
-  align-self: center;
+  align-self: end;
   min-width: 0;
+}
+.home-shell .quest-board .hero-copy-block::before {
+  content: "今日のクエスト";
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .04em;
 }
 .home-shell .quest-board .hero-copy-block h1 {
   margin: 0;
-  max-width: 12em;
+  max-width: 13em;
   color: var(--ink);
-  font-size: clamp(36px, 5vw, 48px);
-  font-weight: 880;
-  line-height: 1.12;
-  letter-spacing: -.055em;
+  font-size: clamp(35px, 4.8vw, 46px);
+  font-weight: 780;
+  line-height: 1.13;
+  letter-spacing: -.045em;
   white-space: normal;
   word-break: normal;
   text-wrap: pretty;
@@ -107,7 +142,7 @@
 .home-shell .quest-board .hero-copy-follow { display: inline; }
 .home-shell .quest-board .hero-copy-follow {
   color: var(--ink-soft);
-  font-weight: 650;
+  font-weight: 590;
 }
 .home-shell .quest-board .hero-kicker,
 .home-shell .quest-board .hero-copy,
@@ -116,111 +151,168 @@
 
 .home-shell .quest-board .quest-board-actions {
   position: relative;
-  z-index: 3;
+  z-index: 4;
   grid-area: actions;
-  align-self: end;
+  align-self: start;
   display: flex;
   gap: 10px;
   margin: 0;
 }
 .home-shell .quest-board .quest-board-action {
+  display: inline-flex;
+  align-items: center;
   min-height: 48px;
-  padding: 0 19px;
+  padding: 0 12px 0 18px;
   border: 0;
   border-radius: 12px;
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 8px 18px rgba(217,74,67,.2);
+  box-shadow: 0 7px 17px rgba(217,74,67,.18);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 .home-shell .quest-board .quest-board-action:hover {
   transform: translateY(-2px);
-  box-shadow: 0 11px 24px rgba(217,74,67,.24);
+  box-shadow: 0 10px 22px rgba(217,74,67,.22);
 }
-.home-shell .quest-board .quest-board-action:active { transform: translateY(0) scale(.98); }
-.home-shell .quest-board .quest-board-action b { margin-left: 13px; font-size: 16px; }
+.home-shell .quest-board .quest-board-action:active { transform: translateY(0) scale(.985); }
+.home-shell .quest-board .quest-board-action b {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  margin-left: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.18);
+  font-size: 14px;
+}
 
+/* Progress is integrated into the Quest Board rather than nested as another card. */
 .home-shell .quest-board-progress {
   position: relative;
   z-index: 3;
   grid-area: progress;
   align-self: end;
   min-width: 0;
-  margin: 0;
-  padding: 20px 18px 18px;
-  border: 1px solid var(--line-soft);
-  border-radius: 15px;
-  background: rgba(244,239,228,.64);
+  margin: 72px 0 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--ink);
   box-shadow: none;
 }
-.quest-board-progress-copy { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
-.quest-board-progress-copy strong { font-size: 30px; line-height: 1; letter-spacing: -.06em; }
-.quest-board-progress-copy strong span { color: var(--muted); font-size: 13px; font-weight: 800; letter-spacing: 0; }
-.quest-board-progress-copy small { color: var(--muted); font-size: 11px; font-weight: 800; }
-.quest-board-dots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; margin-top: 15px; }
+.quest-board-progress-copy {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.quest-board-progress-copy strong {
+  font-size: 29px;
+  font-weight: 760;
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+.quest-board-progress-copy strong span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.quest-board-progress-copy small { color: var(--muted); font-size: 11px; font-weight: 700; }
+.quest-board-dots {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 13px;
+}
 .quest-board-dots i {
   display: block;
-  height: 8px;
+  height: 7px;
   border-radius: 999px;
   background: #ddd6ca;
 }
 .quest-board-dots i.is-done { background: var(--ink); }
-.quest-board-dots i.is-next { background: var(--yellow); box-shadow: inset 0 0 0 1px rgba(23,26,43,.08); }
+.quest-board-dots i.is-next {
+  background: var(--yellow);
+  box-shadow: inset 0 0 0 1px rgba(23,26,43,.07);
+}
 
+/* Hangul itself supplies the visual play. Unequal sizes create one deliberate beat. */
 .quest-board-letters {
   position: absolute;
-  z-index: 1;
-  top: 27px;
+  z-index: 2;
+  top: 28px;
   right: 35px;
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 7px;
   pointer-events: none;
 }
 .quest-board-letters span {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  border: 1px solid rgba(23,26,43,.06);
-  border-radius: 14px;
+  border: 1px solid rgba(23,26,43,.055);
   color: var(--ink);
-  font-size: 21px;
-  font-weight: 950;
+  font-weight: 800;
+  transition: transform .2s ease;
 }
-.quest-board-letters span:nth-child(1) { background: #ffb0aa; }
-.quest-board-letters span:nth-child(2) { background: var(--yellow); transform: translateY(7px) rotate(2deg); }
-.quest-board-letters span:nth-child(3) { background: var(--blue); transform: translateY(1px); }
+.quest-board-letters span:nth-child(1) {
+  width: 56px;
+  height: 56px;
+  border-radius: 15px;
+  background: #ffb0aa;
+  font-size: 23px;
+}
+.quest-board-letters span:nth-child(2) {
+  width: 39px;
+  height: 39px;
+  margin-top: 9px;
+  border-radius: 11px;
+  background: var(--yellow);
+  font-size: 17px;
+  transform: rotate(2deg);
+}
+.quest-board-letters span:nth-child(3) {
+  width: 39px;
+  height: 39px;
+  margin-top: 2px;
+  border-radius: 11px;
+  background: var(--blue);
+  font-size: 17px;
+}
+.home-shell .quest-board:hover .quest-board-letters span:nth-child(1) { transform: translateY(-2px) rotate(-1deg); }
 
-/* ---------- First use: compact guide, not another hero ---------- */
+/* First-use help: light instruction, not another feature block. */
 .home-shell .starter-guide {
-  margin: 16px 0 0;
-  padding: 14px 16px;
-  border: 1px solid var(--line-soft);
-  border-radius: 13px;
-  background: rgba(255,253,248,.66);
+  margin: 15px 0 0;
+  padding: 13px 15px;
+  border: 1px solid rgba(23,26,43,.07);
+  border-radius: 12px;
+  background: rgba(255,253,248,.60);
   box-shadow: none;
 }
 .home-shell .starter-title > span { display: none !important; }
+.home-shell .starter-title strong { font-weight: 750; }
 
-/* ---------- Map: strong grid + game state ---------- */
+/* Stage route — ordered by default; only the current stage becomes a surface. */
 .home-shell .quest-map,
 .home-shell .current-location-section.quest-map {
   width: 100%;
   margin: var(--section-gap) 0 0;
 }
 .home-shell .quest-map .stage-heading {
-  margin: 0 0 15px;
+  margin: 0 0 13px;
   padding: 0;
   border: 0;
 }
 .home-shell .quest-map .stage-heading h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 23px;
+  font-weight: 760;
   line-height: 1.2;
-  letter-spacing: -.04em;
+  letter-spacing: -.035em;
 }
 .home-shell .quest-map .section-kicker,
 .home-shell .quest-map .stage-heading p { display: none !important; }
@@ -228,12 +320,12 @@
   position: relative;
   width: 100%;
   margin: 0;
-  padding: 4px 0 4px 46px !important;
+  padding: 3px 0 3px 46px !important;
   border: 0 !important;
 }
 .home-shell .quest-map .route-rail {
-  top: 31px;
-  bottom: 34px;
+  top: 29px;
+  bottom: 32px;
   left: 18px;
   width: 2px;
   background: linear-gradient(to bottom, var(--ink) 0 var(--route-progress, 0%), var(--line) var(--route-progress, 0%) 100%);
@@ -244,15 +336,15 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 60px minmax(0,1fr) auto;
+  grid-template-columns: 58px minmax(0,1fr) auto;
   align-items: center;
-  gap: 15px;
+  gap: 14px;
   width: 100% !important;
-  min-height: 84px;
+  min-height: 78px;
   margin: 0 !important;
-  padding: 13px 12px 13px 16px !important;
+  padding: 11px 11px 11px 15px !important;
   border: 0 !important;
-  border-bottom: 1px solid var(--line-soft) !important;
+  border-bottom: 1px solid rgba(23,26,43,.07) !important;
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -263,7 +355,8 @@
 .home-shell .quest-map .stage-card::before,
 .home-shell .quest-map .stage-card::after { display: none !important; }
 .home-shell .quest-map .stage-card:hover:not(:disabled):not([data-map-state="current"]) {
-  background: rgba(255,253,248,.5) !important;
+  background: rgba(255,253,248,.54) !important;
+  transform: translateX(2px);
 }
 .home-shell .quest-map .stage-rail {
   position: absolute;
@@ -279,12 +372,12 @@
   margin-top: 5px;
   color: var(--muted);
   font-size: 10px;
-  font-weight: 850;
+  font-weight: 700;
 }
 .home-shell .quest-map .map-marker {
   display: block;
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   margin: 0 auto;
   border: 2px solid var(--line);
   border-radius: 50%;
@@ -295,99 +388,151 @@
   display: grid !important;
   place-items: center;
   grid-column: 1;
-  width: 54px;
-  height: 54px;
-  border: 1px solid rgba(23,26,43,.06);
-  border-radius: 13px;
+  width: 51px;
+  height: 51px;
+  border: 1px solid rgba(23,26,43,.055);
+  border-radius: 12px;
   box-shadow: none;
-  font-size: 20px;
-  font-weight: 950;
+  font-size: 19px;
+  font-weight: 800;
 }
 .home-shell .quest-map .stage-body { grid-column: 2; min-width: 0; padding: 0 !important; }
 .home-shell .quest-map .stage-topline,
 .home-shell .quest-map .stage-progress-line { display: none !important; }
-.home-shell .quest-map .stage-card h3 { margin: 0; font-size: 17px; line-height: 1.3; letter-spacing: -.035em; }
-.home-shell .quest-map .stage-card p { display: none; margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
-.home-shell .quest-map .stage-arrow { display: block !important; grid-column: 3; color: var(--muted); font-size: 17px; }
-
+.home-shell .quest-map .stage-card h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 740;
+  line-height: 1.3;
+  letter-spacing: -.025em;
+}
+.home-shell .quest-map .stage-card p {
+  display: none;
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.home-shell .quest-map .stage-arrow {
+  display: block !important;
+  grid-column: 3;
+  color: var(--muted);
+  font-size: 16px;
+}
+.home-shell .quest-map .stage-card[data-map-state="complete"] { color: rgba(23,26,43,.76); }
+.home-shell .quest-map .stage-card[data-map-state="complete"] .stage-icon { filter: saturate(.55); opacity: .82; }
 .home-shell .quest-map .stage-card[data-map-state="complete"] .map-marker { border-color: #63813c; background: #63813c; }
 .home-shell .quest-map .stage-card[data-map-state="complete"] .map-marker::after {
   content: "✓";
   display: grid;
   place-items: center;
   color: #fff;
-  font-size: 8px;
-  line-height: 9px;
+  font-size: 7px;
+  line-height: 8px;
 }
 .home-shell .quest-map .stage-card[data-map-state="current"] {
   margin: 7px 0 !important;
-  padding: 16px 15px 16px 16px !important;
-  border: 1px solid rgba(23,26,43,.12) !important;
+  padding: 15px 14px 15px 16px !important;
+  border: 1px solid rgba(23,26,43,.105) !important;
   border-radius: 14px !important;
   background: var(--surface) !important;
-  box-shadow: 0 9px 22px rgba(31,31,45,.07) !important;
+  box-shadow: 0 8px 20px rgba(31,31,45,.06) !important;
+}
+.home-shell .quest-map .stage-card[data-map-state="current"]::before {
+  content: "";
+  display: block !important;
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 999px 999px 0;
+  background: var(--stage-color);
 }
 .home-shell .quest-map .stage-card[data-map-state="current"] .map-marker {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   border-color: var(--accent);
   background: var(--accent);
 }
-.home-shell .quest-map .stage-card[data-map-state="current"] .stage-icon { transform: scale(1.04); }
+.home-shell .quest-map .stage-card[data-map-state="current"] .stage-icon {
+  transform: scale(1.035);
+  box-shadow: 0 4px 12px rgba(31,31,45,.07);
+}
 .home-shell .quest-map .stage-card[data-map-state="current"] p { display: block; }
+.home-shell .quest-map .stage-card[data-map-state="current"] .stage-arrow { color: var(--ink); transform: translateX(1px); }
 .home-shell .quest-map .stage-card[data-map-state="current"] h3::after {
   content: "いまここ";
   display: inline-flex;
-  margin-left: 9px;
-  padding: 3px 6px;
+  margin-left: 8px;
+  padding: 2px 6px;
   border-radius: 999px;
-  background: rgba(255,102,94,.1);
+  background: rgba(255,102,94,.09);
   color: var(--accent-dark);
   font-size: 10px;
-  font-weight: 900;
-  vertical-align: .1em;
+  font-weight: 750;
+  vertical-align: .12em;
 }
-.home-shell .quest-map .stage-card[data-map-state="locked"] { opacity: .42; }
+.home-shell .quest-map .stage-card[data-map-state="locked"] { opacity: .36; }
+.home-shell .quest-map .stage-card[data-map-state="locked"] .stage-icon { filter: grayscale(.65); }
 
-/* ---------- FIELD NOTES: the one deliberate break ---------- */
+/* FIELD NOTES — the only section allowed to break the baseline slightly. */
 .home-shell .discovery-notes {
-  width: calc(100% - 28px);
-  margin: var(--section-gap) 0 0 28px;
-  padding: 20px 0 3px 20px;
+  position: relative;
+  width: 100%;
+  margin: var(--section-gap) 0 0;
+  padding: 25px 0 4px 20px;
   border: 0;
-  border-left: 3px solid var(--accent);
+  border-top: 1px solid var(--line);
 }
-.home-shell .discovery-notes .field-notes-heading { margin: 0 0 11px; }
+.home-shell .discovery-notes::before {
+  content: "";
+  position: absolute;
+  top: 27px;
+  bottom: 8px;
+  left: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+.home-shell .discovery-notes .field-notes-heading { margin: 0 0 10px 3px; }
 .home-shell .discovery-notes .section-kicker {
   display: block !important;
   color: var(--accent-dark);
   font-size: 10px;
-  letter-spacing: .11em;
+  font-weight: 750;
+  letter-spacing: .10em;
 }
-.home-shell .discovery-notes .field-notes-heading h2 { margin-top: 3px; font-size: 22px; }
+.home-shell .discovery-notes .field-notes-heading h2 {
+  margin-top: 3px;
+  font-size: 21px;
+  font-weight: 730;
+}
 .home-shell .discovery-notes .field-notes-heading p { margin-top: 4px; font-size: 12px; }
 .home-shell .discovery-notes .field-notes-preview { border-top: 1px solid var(--line-soft); }
 .home-shell .discovery-notes .field-note-row {
-  padding: 14px 2px;
+  padding: 13px 2px;
   border-bottom: 1px solid var(--line-soft);
+  transition: transform .14s ease, background .14s ease;
 }
+.home-shell .discovery-notes .field-note-row:hover { background: rgba(255,253,248,.42); }
 .home-shell .discovery-notes .field-note-row:nth-child(even) {
-  width: calc(100% - 12px);
-  margin-left: 12px;
+  width: calc(100% - 6px);
+  margin-left: 6px;
 }
-.home-shell .discovery-notes .field-note-row strong { font-size: 18px; }
+.home-shell .discovery-notes .field-note-row strong { font-size: 17px; font-weight: 760; }
 
-/* ---------- Record: quiet by design ---------- */
+/* Record — deliberately quiet. */
 .home-shell .quiet-record {
   width: 100%;
   margin: var(--section-gap) 0 0;
-  padding: 27px 0 0;
+  padding: 26px 0 0;
   border: 0;
   border-top: 1px solid var(--line);
 }
 .home-shell .quiet-record .section-kicker { display: none !important; }
-.home-shell .quiet-record > .section-heading { margin-bottom: 15px; }
-.home-shell .quiet-record .section-heading h2 { margin: 0; font-size: 21px; }
+.home-shell .quiet-record > .section-heading { margin-bottom: 14px; }
+.home-shell .quiet-record .section-heading h2 { margin: 0; font-size: 20px; font-weight: 730; }
 .home-shell .quiet-record .record-values {
   display: grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
@@ -403,26 +548,27 @@
 }
 .home-shell .quiet-record .mini-stat + .mini-stat { padding-left: 18px; border-left: 1px solid var(--line-soft); }
 .home-shell .quiet-record .mini-stat-icon { display: none; }
-.home-shell .quiet-record .mini-stat strong { font-size: 24px; letter-spacing: -.04em; }
+.home-shell .quiet-record .mini-stat strong { font-size: 23px; font-weight: 720; letter-spacing: -.03em; }
 .home-shell .quiet-record .mini-stat small { margin-top: 4px; font-size: 11px; }
+.home-shell .quiet-record .text-button { font-weight: 700; }
 
-/* ---------- Practice: controls may look like controls ---------- */
+/* Practice — interactive, but visibly secondary to Today. */
 .home-shell .practice-surface {
   width: 100%;
   margin: var(--section-gap) 0 0;
-  padding: 24px 24px 22px;
-  border: 1px solid var(--line-soft);
-  border-radius: 16px;
-  background: rgba(255,253,248,.76);
-  box-shadow: 0 7px 18px rgba(31,31,45,.045);
+  padding: 23px 23px 21px;
+  border: 1px solid rgba(23,26,43,.08);
+  border-radius: 15px;
+  background: rgba(255,253,248,.68);
+  box-shadow: none;
 }
 .home-shell .practice-surface .section-kicker { display: none !important; }
-.home-shell .practice-surface .compact-heading { margin-bottom: 18px; }
-.home-shell .practice-surface .compact-heading h2 { margin: 0; font-size: 21px; }
+.home-shell .practice-surface .compact-heading { margin-bottom: 17px; }
+.home-shell .practice-surface .compact-heading h2 { margin: 0; font-size: 20px; font-weight: 730; }
 .home-shell .practice-surface .segment-control {
-  gap: 5px;
-  padding: 5px;
-  border-radius: 12px;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 11px;
   background: #ebe5da;
 }
 .home-shell .practice-surface .segment-button {
@@ -434,26 +580,27 @@
   color: var(--muted);
   box-shadow: none;
   font-size: 11px;
+  font-weight: 700;
 }
 .home-shell .practice-surface .segment-button.is-active {
   background: var(--surface-strong);
   color: var(--ink);
-  box-shadow: 0 3px 9px rgba(31,31,45,.08);
+  box-shadow: 0 2px 7px rgba(31,31,45,.07);
 }
 .home-shell .practice-surface .practice-weak-action {
-  margin-top: 20px;
-  padding: 14px 0 0;
+  margin-top: 19px;
+  padding: 13px 0 0;
   border: 0;
   border-top: 1px solid var(--line-soft);
 }
-.home-shell .practice-surface .practice-weak-action .rival-letter { font-size: 40px; }
+.home-shell .practice-surface .practice-weak-action .rival-letter { font-size: 38px; font-weight: 760; }
 .home-shell .practice-surface .practice-weak-action .rival-meter,
 .home-shell .practice-surface .practice-weak-action > small { display: none; }
 
 .home-shell .note-box {
   width: 100%;
-  margin: 30px 0 0;
-  padding: 12px 0 0 14px;
+  margin: 29px 0 0;
+  padding: 11px 0 0 13px;
   border: 0;
   border-left: 2px solid var(--line);
   border-radius: 0;
@@ -466,19 +613,22 @@
   .home-shell.playable-home { --section-gap: 34px; }
   .home-shell .quest-board,
   .home-shell .today-section.quest-board {
-    grid-template-columns: minmax(0,1fr) 205px;
-    gap: 20px 24px;
-    padding: 30px 28px 28px !important;
+    grid-template-columns: minmax(0,1fr) 200px;
+    gap: 20px 26px;
+    padding: 30px 28px 27px !important;
   }
+  .home-shell .quest-board-progress { margin-top: 67px; }
   .quest-board-letters { top: 24px; right: 27px; }
-  .quest-board-letters span { width: 42px; height: 42px; font-size: 19px; }
+  .quest-board-letters span:nth-child(1) { width: 50px; height: 50px; font-size: 21px; }
+  .quest-board-letters span:nth-child(2),
+  .quest-board-letters span:nth-child(3) { width: 36px; height: 36px; font-size: 16px; }
   .home-shell .quiet-record .record-values { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .home-shell .quiet-record .mini-stat:nth-child(3) { padding-left: 0; border-left: 0; }
 }
 
 @media (max-width: 620px) {
-  .home-shell .system-topbar { margin-bottom: 14px; }
-  .home-shell .system-topbar .brand-mark { width: 35px; height: 35px; }
+  .home-shell .system-topbar { min-height: 51px; margin-bottom: 15px; padding-bottom: 11px; }
+  .home-shell .system-topbar .brand-mark { width: 35px; height: 35px; border-radius: 10px; }
   .home-shell .system-topbar .brand-text strong { font-size: 14px; }
   .home-shell .system-topbar .system-nav-button { width: 34px; height: 34px; }
 
@@ -490,47 +640,60 @@
       "copy"
       "progress"
       "actions";
-    gap: 19px;
+    gap: 18px;
     min-height: 0;
-    padding: 27px 22px 22px !important;
-    border-radius: 18px !important;
+    padding: 26px 21px 21px !important;
+    border-radius: 16px !important;
   }
-  .home-shell .quest-board .hero-copy-block h1 { max-width: 11em; font-size: clamp(31px, 9vw, 39px); }
-  .home-shell .quest-board-progress { width: 100%; padding: 15px 14px; }
+  .home-shell .quest-board::before { left: 21px; width: 54px; }
+  .home-shell .quest-board .hero-copy-block::before { margin-bottom: 10px; }
+  .home-shell .quest-board .hero-copy-block h1 {
+    max-width: 11.5em;
+    padding-right: 58px;
+    font-size: clamp(30px, 8.7vw, 38px);
+    line-height: 1.15;
+  }
+  .home-shell .quest-board-progress { width: 100%; margin: 0; padding: 0; }
   .home-shell .quest-board .quest-board-action { width: 100%; justify-content: space-between; }
-  .quest-board-letters { top: 22px; right: 18px; gap: 5px; opacity: .72; }
-  .quest-board-letters span { width: 34px; height: 34px; border-radius: 10px; font-size: 16px; }
+  .quest-board-letters { top: 21px; right: 17px; gap: 4px; opacity: .78; }
+  .quest-board-letters span:nth-child(1) { width: 39px; height: 39px; border-radius: 11px; font-size: 17px; }
+  .quest-board-letters span:nth-child(2) { width: 29px; height: 29px; margin-top: 7px; border-radius: 9px; font-size: 13px; }
+  .quest-board-letters span:nth-child(3) { display: none; }
 
   .home-shell .quest-map .stage-grid { padding-left: 37px !important; }
   .home-shell .quest-map .route-rail { left: 15px; }
   .home-shell .quest-map .stage-card,
   .home-shell .quest-map .stage-card:has(.status-open),
   .home-shell .quest-map .stage-card[data-map-state="current"] {
-    grid-template-columns: 49px minmax(0,1fr) auto;
-    min-height: 76px;
-    gap: 11px;
-    padding: 12px 5px 12px 12px !important;
+    grid-template-columns: 47px minmax(0,1fr) auto;
+    min-height: 72px;
+    gap: 10px;
+    padding: 10px 5px 10px 11px !important;
   }
   .home-shell .quest-map .stage-rail { left: -37px; width: 30px; }
-  .home-shell .quest-map .stage-icon { width: 44px; height: 44px; border-radius: 11px; font-size: 17px; }
-  .home-shell .quest-map .stage-card h3 { font-size: 16px; }
-  .home-shell .quest-map .stage-card[data-map-state="current"] { padding: 14px 10px 14px 12px !important; }
+  .home-shell .quest-map .stage-icon { width: 43px; height: 43px; border-radius: 10px; font-size: 16px; }
+  .home-shell .quest-map .stage-card h3 { font-size: 15px; }
+  .home-shell .quest-map .stage-card[data-map-state="current"] { padding: 13px 9px 13px 12px !important; }
+  .home-shell .quest-map .stage-card[data-map-state="current"] h3::after { margin-left: 6px; }
 
-  .home-shell .discovery-notes {
-    width: calc(100% - 12px);
-    margin-left: 12px;
-    padding-left: 14px;
-  }
+  .home-shell .discovery-notes { padding-left: 15px; }
   .home-shell .discovery-notes .field-notes-heading { align-items: flex-start; }
   .home-shell .discovery-notes .field-notes-actions { gap: 8px; }
+  .home-shell .discovery-notes .field-note-row:nth-child(even) { width: calc(100% - 4px); margin-left: 4px; }
 
-  .home-shell .practice-surface { padding: 20px 17px; }
+  .home-shell .practice-surface { padding: 19px 16px; }
   .home-shell .practice-surface .config-row { grid-template-columns: 1fr; align-items: start; }
 }
 
 @media (max-width: 390px) {
   .home-shell .system-topbar .topbar-actions { gap: 0; }
-  .home-shell .system-topbar .system-nav-button { width: 32px; }
-  .quest-board-letters span:nth-child(3) { display: none; }
+  .home-shell .system-topbar .system-nav-button { width: 31px; }
   .home-shell .quiet-record .mini-stat strong { font-size: 21px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-shell .quest-board .quest-board-action,
+  .home-shell .quest-map .stage-card,
+  .quest-board-letters span,
+  .home-shell .discovery-notes .field-note-row { transition: none !important; }
 }
