@@ -106,7 +106,12 @@ function upgradeHome(home) {
     if (stats) {
       const record = document.createElement('section');
       record.className = 'record-section';
-      record.innerHTML = '<div class="section-heading"><div><span class="section-kicker">YOUR RECORD</span><h2>学習の記録</h2></div><button type="button" class="text-button" data-action="show-stats">詳しく見る →</button></div>';
+      record.innerHTML = '<div class="section-heading"><div><span class="section-kicker">YOUR RECORD</span><h2>学習の記録</h2></div></div>';
+      const existingStatsButton = practice?.querySelector('[data-action="show-stats"]');
+      if (existingStatsButton) {
+        existingStatsButton.textContent = '詳しく見る →';
+        record.querySelector('.section-heading')?.append(existingStatsButton);
+      }
       stats.classList.add('record-values');
       record.append(stats);
       if (practice) practice.before(record);
