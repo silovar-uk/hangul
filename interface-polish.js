@@ -99,7 +99,9 @@ function simplifySectionHeadings(home) {
   location?.querySelector('.section-kicker')?.remove();
   location?.querySelector('.stage-heading p')?.remove();
   const locationTitle = location?.querySelector('.stage-heading h2');
-  if (locationTitle) locationTitle.textContent = 'いまのステージ';
+  if (locationTitle && locationTitle.textContent !== 'いまのステージ') {
+    locationTitle.textContent = 'いまのステージ';
+  }
 
   const record = home.querySelector('.record-section');
   record?.querySelector('.section-kicker')?.remove();
@@ -114,24 +116,24 @@ function simplifySectionHeadings(home) {
 }
 
 function markHierarchy(home) {
-  home.classList.remove('editorial-home');
-  home.classList.add('playable-home');
+  if (home.classList.contains('editorial-home')) home.classList.remove('editorial-home');
+  if (!home.classList.contains('playable-home')) home.classList.add('playable-home');
 
   const location = home.querySelector('.current-location-section');
-  location?.classList.remove('editorial-map');
-  location?.classList.add('quest-map');
+  if (location?.classList.contains('editorial-map')) location.classList.remove('editorial-map');
+  if (location && !location.classList.contains('quest-map')) location.classList.add('quest-map');
 
   const notes = home.querySelector('.field-notes-section');
-  notes?.classList.remove('editorial-notes');
-  notes?.classList.add('discovery-notes');
+  if (notes?.classList.contains('editorial-notes')) notes.classList.remove('editorial-notes');
+  if (notes && !notes.classList.contains('discovery-notes')) notes.classList.add('discovery-notes');
 
   const record = home.querySelector('.record-section');
-  record?.classList.remove('editorial-record');
-  record?.classList.add('quiet-record');
+  if (record?.classList.contains('editorial-record')) record.classList.remove('editorial-record');
+  if (record && !record.classList.contains('quiet-record')) record.classList.add('quiet-record');
 
   const practice = home.querySelector('.practice-config');
-  practice?.classList.remove('editorial-practice');
-  practice?.classList.add('practice-surface');
+  if (practice?.classList.contains('editorial-practice')) practice.classList.remove('editorial-practice');
+  if (practice && !practice.classList.contains('practice-surface')) practice.classList.add('practice-surface');
 }
 
 function polishHome() {
@@ -144,7 +146,25 @@ function polishHome() {
 }
 
 if (app) {
-  const observer = new MutationObserver(polishHome);
-  observer.observe(app, { childList: true, subtree: true });
-  polishHome();
+  let scheduled = false;
+  let observer;
+
+  const observe = () => {
+    observer.observe(app, { childList: true, subtree: true });
+  };
+
+  const schedulePolish = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      observer.disconnect();
+      polishHome();
+      observe();
+    });
+  };
+
+  observer = new MutationObserver(schedulePolish);
+  observe();
+  schedulePolish();
 }
