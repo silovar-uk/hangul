@@ -31,6 +31,40 @@
   line-height: 1.6;
 }
 
+/* Scores remain available, but they stop competing with the learning itself. */
+.game-shell .score-badge {
+  min-width: 67px;
+  padding: 6px 8px;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.game-shell .score-badge span {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 750;
+}
+
+.game-shell .score-badge strong {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.game-shell .point-pop {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 720;
+  animation: none;
+}
+
+.game-shell .point-pop small {
+  font-size: 7px;
+}
+
 /* One correct answer: a quiet confirmation, not a celebration card. */
 .game-shell .learning-reward--micro {
   display: grid;
