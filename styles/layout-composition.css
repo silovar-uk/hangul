@@ -1,0 +1,230 @@
+/*
+ * Hangul Quest — home composition refinement
+ * Principle: one strong play lane, one supporting sidecar.
+ * Asymmetry comes from proportion, not scattered alignment.
+ */
+
+@media (min-width: 900px) {
+  .home-shell.playable-home {
+    display: grid;
+    grid-template-columns: minmax(0, 1.62fr) minmax(292px, .88fr);
+    grid-template-areas:
+      "topbar topbar"
+      "starter starter"
+      "quest quest"
+      "route notes"
+      "route record"
+      "route practice"
+      "expansion expansion"
+      "note note";
+    column-gap: 36px;
+    row-gap: 0;
+    align-items: start;
+  }
+
+  .home-shell.playable-home > .system-topbar { grid-area: topbar; }
+  .home-shell.playable-home > .starter-guide { grid-area: starter; }
+  .home-shell.playable-home > .quest-board,
+  .home-shell.playable-home > .today-section.quest-board { grid-area: quest; }
+  .home-shell.playable-home > .quest-map,
+  .home-shell.playable-home > .current-location-section.quest-map { grid-area: route; }
+  .home-shell.playable-home > .discovery-notes { grid-area: notes; }
+  .home-shell.playable-home > .quiet-record { grid-area: record; }
+  .home-shell.playable-home > .practice-surface { grid-area: practice; }
+  .home-shell.playable-home > .learning-expansion { grid-area: expansion; }
+  .home-shell.playable-home > .note-box { grid-area: note; }
+
+  /* Full-width entry: slightly tighter so the page moves into the route sooner. */
+  .home-shell.playable-home > .quest-board,
+  .home-shell.playable-home > .today-section.quest-board {
+    grid-template-columns: minmax(0, 1fr) minmax(214px, 242px);
+    gap: 18px 52px;
+    min-height: 228px;
+    padding: 31px 34px 29px !important;
+  }
+
+  .home-shell.playable-home .quest-board .hero-copy-block {
+    align-self: center;
+  }
+
+  .home-shell.playable-home .quest-board .quest-board-actions {
+    align-self: start;
+  }
+
+  .home-shell.playable-home .quest-board-progress {
+    align-self: end;
+    margin: 64px 0 4px;
+  }
+
+  /* Main lane: the route owns the largest amount of space below the quest. */
+  .home-shell.playable-home > .quest-map,
+  .home-shell.playable-home > .current-location-section.quest-map {
+    min-width: 0;
+    margin: 40px 0 0;
+    padding: 0 6px 0 0;
+  }
+
+  .home-shell.playable-home .quest-map .stage-heading {
+    margin-bottom: 15px;
+  }
+
+  .home-shell.playable-home .quest-map .stage-grid {
+    padding-left: 44px !important;
+  }
+
+  .home-shell.playable-home .quest-map .stage-rail {
+    left: -44px;
+  }
+
+  .home-shell.playable-home .quest-map .stage-card,
+  .home-shell.playable-home .quest-map .stage-card:has(.status-open),
+  .home-shell.playable-home .quest-map .stage-card[data-map-state="current"] {
+    min-height: 76px;
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    gap: 13px;
+  }
+
+  .home-shell.playable-home .quest-map .stage-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 11px;
+  }
+
+  .home-shell.playable-home .quest-map .stage-card[data-map-state="current"] {
+    margin: 6px 0 !important;
+    padding: 14px 13px 14px 15px !important;
+  }
+
+  /* Sidecar: same baseline, less area. No card stack. */
+  .home-shell.playable-home > .discovery-notes,
+  .home-shell.playable-home > .quiet-record,
+  .home-shell.playable-home > .practice-surface {
+    min-width: 0;
+  }
+
+  .home-shell.playable-home > .discovery-notes {
+    margin: 40px 0 0;
+    padding: 0 0 2px 17px;
+    border-top: 0;
+  }
+
+  .home-shell.playable-home > .discovery-notes::before {
+    top: 2px;
+    bottom: 3px;
+  }
+
+  .home-shell.playable-home .discovery-notes .field-notes-heading {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 9px;
+    margin: 0 0 11px 2px;
+  }
+
+  .home-shell.playable-home .discovery-notes .field-notes-actions {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .home-shell.playable-home .discovery-notes .field-note-row {
+    grid-template-columns: 50px minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 12px 1px;
+  }
+
+  .home-shell.playable-home .discovery-notes .field-note-row strong {
+    font-size: 16px;
+  }
+
+  .home-shell.playable-home > .quiet-record {
+    margin: 25px 0 0;
+    padding: 21px 0 0;
+  }
+
+  .home-shell.playable-home .quiet-record > .section-heading {
+    margin-bottom: 12px;
+  }
+
+  .home-shell.playable-home .quiet-record .record-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-shell.playable-home .quiet-record .mini-stat,
+  .home-shell.playable-home .quiet-record .mini-stat + .mini-stat {
+    min-width: 0;
+    padding: 8px 12px 12px 0;
+    border-left: 0;
+  }
+
+  .home-shell.playable-home .quiet-record .mini-stat:nth-child(even) {
+    padding-left: 14px;
+    border-left: 1px solid var(--line-soft);
+  }
+
+  .home-shell.playable-home .quiet-record .mini-stat:nth-child(n+3) {
+    padding-top: 13px;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .home-shell.playable-home .quiet-record .mini-stat strong {
+    font-size: 21px;
+  }
+
+  .home-shell.playable-home > .practice-surface {
+    margin: 24px 0 0;
+    padding: 19px 18px 17px;
+    border-radius: 14px;
+  }
+
+  .home-shell.playable-home .practice-surface .compact-heading {
+    margin-bottom: 15px;
+  }
+
+  .home-shell.playable-home .practice-surface .config-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .home-shell.playable-home .practice-surface .segment-control {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .home-shell.playable-home .practice-surface .segment-button {
+    min-width: 0;
+    padding-inline: 6px;
+    white-space: nowrap;
+  }
+
+  .home-shell.playable-home .practice-surface .practice-weak-action {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 5px 12px;
+    margin-top: 16px;
+    padding-top: 13px;
+  }
+
+  .home-shell.playable-home .practice-surface .practice-weak-action .rival-letter {
+    min-width: 64px;
+    font-size: 34px;
+  }
+
+  /* Secondary content returns to the full lane after the two-column play area. */
+  .home-shell.playable-home > .learning-expansion {
+    width: 100%;
+    margin-top: 42px;
+  }
+
+  .home-shell.playable-home > .note-box {
+    width: 100%;
+    margin-top: 28px;
+  }
+}
+
+/* The composition deliberately collapses back to the proven single-column flow. */
+@media (max-width: 899px) {
+  .home-shell.playable-home {
+    display: block;
+  }
+}
