@@ -2,6 +2,8 @@ const app = document.querySelector('#app');
 
 function setNavIcon(button, symbol, label) {
   if (!button) return;
+  if (button.dataset.systemNavSymbol === symbol) return;
+  button.dataset.systemNavSymbol = symbol;
   button.classList.add('system-nav-button');
   button.setAttribute('aria-label', label);
   button.setAttribute('title', label);
@@ -16,7 +18,7 @@ function polishTopbar(home) {
   home.querySelector('.brand-text small')?.remove();
 
   const title = home.querySelector('.brand-text strong');
-  if (title) title.textContent = 'ハングル・クエスト';
+  if (title && title.textContent !== 'ハングル・クエスト') title.textContent = 'ハングル・クエスト';
 
   setNavIcon(topbar.querySelector('[data-learning-open="hub"]'), '単', '単語');
   setNavIcon(topbar.querySelector('[data-action="show-stats"]'), '▥', '成績');
@@ -38,8 +40,7 @@ function polishHero(home) {
     heading.dataset.copyPolished = 'true';
   }
 
-  const missionLabel = hero.querySelector('.quest-panel-copy > span');
-  missionLabel?.remove();
+  hero.querySelector('.quest-panel-copy > span')?.remove();
 }
 
 function simplifySectionHeadings(home) {
@@ -54,7 +55,7 @@ function simplifySectionHeadings(home) {
   practice?.querySelector('.section-kicker')?.remove();
 
   const weakLabel = home.querySelector('.practice-weak-action .rival-copy span');
-  if (weakLabel) weakLabel.textContent = '苦手';
+  if (weakLabel && weakLabel.textContent !== '苦手') weakLabel.textContent = '苦手';
 
   home.querySelector('.starter-title span')?.remove();
 }
