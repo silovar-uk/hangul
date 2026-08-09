@@ -48,8 +48,20 @@ function openShell() {
   document.body.classList.add('notes-open');
 }
 
-function closePanel() {
+function flushEditor() {
   clearTimeout(saveTimer);
+  const textarea = panel?.querySelector('.notes-editor');
+  if (!textarea) return;
+  const body = textarea.value;
+  if (activeNote) activeNote = updateNote(activeNote.id, { body }) || activeNote;
+  else if (body.trim()) {
+    activeNote = createNote({ ...draftMeta, body });
+    draftMeta = null;
+  }
+}
+
+function closePanel() {
+  flushEditor();
   panel?.classList.remove('is-open');
   if (backdrop) backdrop.hidden = true;
   document.body.classList.remove('notes-open');
@@ -68,6 +80,7 @@ function noteTypeLabel(kind) {
 }
 
 function openList(filter = 'all') {
+  if (panel?.querySelector('.notes-editor')) flushEditor();
   listFilter = filter;
   activeNote = null;
   draftMeta = null;
