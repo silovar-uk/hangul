@@ -64,6 +64,7 @@ const VOWEL_INSIGHTS = {
 function upgradeHome(home) {
   if (home.dataset.experienceReady === 'true') {
     refreshFieldNotes(home);
+    normalizeHomeOrder(home);
     return;
   }
   home.dataset.experienceReady = 'true';
@@ -144,6 +145,25 @@ function upgradeHome(home) {
   else home.append(notes);
 
   refreshFieldNotes(home);
+  normalizeHomeOrder(home);
+}
+
+function normalizeHomeOrder(home) {
+  const hero = home.querySelector('.today-section');
+  if (!hero) return;
+  const desired = [
+    home.querySelector('.current-location-section'),
+    home.querySelector('.field-notes-section'),
+    home.querySelector('.record-section'),
+    home.querySelector('.practice-config'),
+    home.querySelector('.learning-expansion')
+  ].filter(Boolean);
+
+  let cursor = hero;
+  for (const node of desired) {
+    if (cursor.nextElementSibling !== node) cursor.after(node);
+    cursor = node;
+  }
 }
 
 function buildRoute(stageGrid) {
