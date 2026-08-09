@@ -8,11 +8,13 @@ import {
 } from './notes-store.js';
 
 let panel = null;
-let backdrop = null;
+let launcher = null;
 let activeNote = null;
 let draftMeta = null;
 let saveTimer = null;
+let toastTimer = null;
 let listFilter = 'all';
+let returnFocus = null;
 
 function escapeHtml(value = '') {
   return String(value)
@@ -23,29 +25,63 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#039;');
 }
 
+function noteCount() {
+  return getAllNotes().length;
+}
+
+function updateLauncher() {
+  if (!launcher) return;
+  const count = noteCount();
+  launcher.classList.toggle('has-notes', count > 0);
+  launcher.setAttribute('aria-label', count ? `メモを開く。${count}件あります` : 'メモを開く');
+  const dot = launcher.querySelector('.notes-launcher-dot');
+  if (dot) dot.hidden = count === 0;
+}
+
+function ensureLauncher() {
+  if (launcher) return;
+  launcher = document.createElement('button');
+  launcher.type = 'button';
+  launcher.className = 'notes-launcher';
+  launcher.setAttribute('aria-controls', 'globalNotesPanel');
+  launcher.setAttribute('aria-expanded', 'false');
+  launcher.innerHTML = `
+    <span class="notes-launcher-icon" aria-hidden="true">✎</span>
+    <span class="notes-launcher-label">メモ</span>
+    <span class="notes-launcher-dot" aria-hidden="true" hidden></span>
+  `;
+  launcher.addEventListener('click', () => {
+    if (panel?.classList.contains('is-open')) closePanel();
+    else {
+      returnFocus = launcher;
+      openList('all');
+    }
+  });
+  document.body.append(launcher);
+  updateLauncher();
+}
+
 function ensurePanel() {
+  ensureLauncher();
   if (panel) return;
-  backdrop = document.createElement('div');
-  backdrop.className = 'notes-backdrop';
-  backdrop.hidden = true;
-  backdrop.addEventListener('click', closePanel);
 
   panel = document.createElement('aside');
+  panel.id = 'globalNotesPanel';
   panel.className = 'notes-panel';
   panel.setAttribute('aria-label', '学習メモ');
-  panel.setAttribute('aria-modal', 'true');
-  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-hidden', 'true');
   panel.addEventListener('click', handlePanelClick);
   panel.addEventListener('input', handlePanelInput);
 
-  document.body.append(backdrop, panel);
+  document.body.append(panel);
 }
 
 function openShell() {
   ensurePanel();
-  backdrop.hidden = false;
+  panel.setAttribute('aria-hidden', 'false');
   requestAnimationFrame(() => panel.classList.add('is-open'));
-  document.body.classList.add('notes-open');
+  document.body.classList.add('notes-panel-open');
+  launcher?.setAttribute('aria-expanded', 'true');
 }
 
 function flushEditor() {
@@ -60,13 +96,20 @@ function flushEditor() {
   }
 }
 
-function closePanel() {
+function closePanel({ restoreFocus = true } = {}) {
   flushEditor();
   panel?.classList.remove('is-open');
-  if (backdrop) backdrop.hidden = true;
-  document.body.classList.remove('notes-open');
+  panel?.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('notes-panel-open');
+  launcher?.setAttribute('aria-expanded', 'false');
   activeNote = null;
   draftMeta = null;
+  updateLauncher();
+
+  if (restoreFocus && returnFocus?.isConnected) {
+    requestAnimationFrame(() => returnFocus.focus());
+  }
+  returnFocus = null;
 }
 
 function formatDate(value) {
@@ -92,7 +135,7 @@ function renderList() {
   const notes = getAllNotes().filter((note) => listFilter === 'all' || note.kind === listFilter);
   panel.innerHTML = `
     <div class="notes-panel-header">
-      <div><span>FIELD NOTES</span><h2>自分の観察メモ</h2></div>
+      <div><span>MEMO</span><h2>学習メモ</h2><p>${notes.length ? `${notes.length}件` : 'この端末に保存'}</p></div>
       <button type="button" data-notes-close aria-label="メモを閉じる">×</button>
     </div>
     <div class="notes-filter" role="tablist" aria-label="メモの種類">
@@ -104,11 +147,11 @@ function renderList() {
       ${notes.length ? notes.map(noteListItem).join('') : `
         <div class="notes-empty">
           <strong>まだメモはありません。</strong>
-          <p>「違いが分かった」「ここで間違える」を、自分の言葉で残しておく。</p>
+          <p>気づいた違いや、あとで見直したいことを短く残せます。</p>
         </div>
       `}
     </div>
-    <button type="button" class="notes-new-button" data-note-new>＋ 自由メモを書く</button>
+    <button type="button" class="notes-new-button" data-note-new>＋ メモを書く</button>
   `;
 }
 
@@ -119,11 +162,17 @@ function filterButton(value, label) {
 function noteListItem(note) {
   const label = note.targetLabel || noteTypeLabel(note.kind);
   return `
-    <button type="button" class="notes-list-item" data-note-id="${escapeHtml(note.id)}">
-      <span class="notes-list-label">${escapeHtml(label)}</span>
-      <span class="notes-list-body">${escapeHtml(note.body)}</span>
-      <time>${formatDate(note.updatedAt)}</time>
-    </button>
+    <div class="notes-list-item" data-note-id="${escapeHtml(note.id)}">
+      <button type="button" class="notes-list-main" data-note-edit="${escapeHtml(note.id)}">
+        <span class="notes-list-label">${escapeHtml(label)}</span>
+        <span class="notes-list-body">${escapeHtml(note.body)}</span>
+        <time>${formatDate(note.updatedAt)}</time>
+      </button>
+      <div class="notes-list-actions" aria-label="メモ操作">
+        <button type="button" data-note-copy="${escapeHtml(note.id)}">コピー</button>
+        <button type="button" class="is-danger" data-note-remove="${escapeHtml(note.id)}">削除</button>
+      </div>
+    </div>
   `;
 }
 
@@ -144,19 +193,18 @@ function renderEditor() {
   const meta = note || draftMeta || { kind: 'general', targetId: '', targetLabel: '' };
   const title = meta.targetLabel || (meta.kind === 'general' ? '自由メモ' : noteTypeLabel(meta.kind));
   panel.innerHTML = `
-    <div class="notes-panel-header">
+    <div class="notes-panel-header notes-editor-header">
       <button type="button" class="notes-back" data-notes-list aria-label="メモ一覧へ戻る">←</button>
-      <div><span>FIELD NOTE</span><h2>${escapeHtml(title)}</h2></div>
+      <div><span>MEMO</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(noteTypeLabel(meta.kind))}</p></div>
       <button type="button" data-notes-close aria-label="メモを閉じる">×</button>
     </div>
-    <div class="notes-editor-meta">
-      <span>${escapeHtml(noteTypeLabel(meta.kind))}</span>
-      <strong>${escapeHtml(meta.targetLabel || '思いついたことを残す')}</strong>
-    </div>
-    <textarea class="notes-editor" rows="10" maxlength="3000" placeholder="例：ㅗは唇を丸める。ㅓは丸めない。">${escapeHtml(note?.body || '')}</textarea>
+    <textarea class="notes-editor" rows="10" maxlength="3000" placeholder="気づいた違い、間違えやすい点、あとで見たいこと…">${escapeHtml(note?.body || '')}</textarea>
     <div class="notes-editor-footer">
       <span class="notes-save-state" aria-live="polite">${note ? '保存済み' : '入力すると自動保存'}</span>
-      ${note ? '<button type="button" class="notes-delete" data-note-delete>削除</button>' : ''}
+      <div class="notes-editor-actions">
+        <button type="button" data-note-copy-active>コピー</button>
+        ${note ? '<button type="button" class="is-danger" data-note-delete>削除</button>' : ''}
+      </div>
     </div>
   `;
 }
@@ -184,40 +232,105 @@ function saveBody(body) {
         textarea.setSelectionRange(textarea.value.length, textarea.value.length);
       }
     });
+    updateLauncher();
     return;
   }
   const state = panel.querySelector('.notes-save-state');
   if (state) state.textContent = '保存済み';
+  updateLauncher();
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const helper = document.createElement('textarea');
+  helper.value = text;
+  helper.setAttribute('readonly', '');
+  helper.style.position = 'fixed';
+  helper.style.opacity = '0';
+  document.body.append(helper);
+  helper.select();
+  document.execCommand('copy');
+  helper.remove();
+}
+
+function showOperation(message) {
+  if (!panel) return;
+  clearTimeout(toastTimer);
+  panel.querySelector('.notes-operation-toast')?.remove();
+  const toast = document.createElement('div');
+  toast.className = 'notes-operation-toast';
+  toast.setAttribute('role', 'status');
+  toast.textContent = message;
+  panel.append(toast);
+  toastTimer = setTimeout(() => toast.remove(), 1400);
+}
+
+async function copyNote(id) {
+  const note = getNote(id);
+  if (!note?.body.trim()) return showOperation('メモは空です');
+  try {
+    await copyText(note.body);
+    showOperation('コピーしました');
+  } catch {
+    showOperation('コピーできませんでした');
+  }
+}
+
+function removeNote(id) {
+  const note = getNote(id);
+  if (!note) return;
+  if (!window.confirm('このメモを削除しますか？')) return;
+  deleteNote(id);
+  if (activeNote?.id === id) activeNote = null;
+  updateLauncher();
+  renderList();
+  showOperation('削除しました');
+}
+
+async function copyActiveEditor() {
+  const textarea = panel?.querySelector('.notes-editor');
+  const text = textarea?.value || '';
+  if (!text.trim()) return showOperation('メモは空です');
+  try {
+    await copyText(text);
+    showOperation('コピーしました');
+  } catch {
+    showOperation('コピーできませんでした');
+  }
 }
 
 function handlePanelClick(event) {
-  const close = event.target.closest('[data-notes-close]');
-  if (close) return closePanel();
+  if (event.target.closest('[data-notes-close]')) return closePanel();
 
-  const back = event.target.closest('[data-notes-list]');
-  if (back) return openList(listFilter);
+  if (event.target.closest('[data-notes-list]')) return openList(listFilter);
 
   const filter = event.target.closest('[data-note-filter]');
   if (filter) return openList(filter.dataset.noteFilter);
 
-  const item = event.target.closest('[data-note-id]');
-  if (item) return openEditor({ id: item.dataset.noteId });
+  const copy = event.target.closest('[data-note-copy]');
+  if (copy) return copyNote(copy.dataset.noteCopy);
+
+  const remove = event.target.closest('[data-note-remove]');
+  if (remove) return removeNote(remove.dataset.noteRemove);
+
+  const edit = event.target.closest('[data-note-edit]');
+  if (edit) return openEditor({ id: edit.dataset.noteEdit });
 
   if (event.target.closest('[data-note-new]')) return openEditor({ kind: 'general' });
 
-  if (event.target.closest('[data-note-delete]') && activeNote) {
-    if (window.confirm('このメモを削除しますか？')) {
-      deleteNote(activeNote.id);
-      activeNote = null;
-      openList(listFilter);
-    }
-  }
+  if (event.target.closest('[data-note-copy-active]')) return copyActiveEditor();
+
+  if (event.target.closest('[data-note-delete]') && activeNote) return removeNote(activeNote.id);
 }
 
 document.addEventListener('click', (event) => {
   const opener = event.target.closest('[data-note-open]');
   if (opener) {
     event.preventDefault();
+    returnFocus = opener;
     openEditor({
       kind: opener.dataset.noteOpen || 'general',
       targetId: opener.dataset.noteTargetId || '',
@@ -229,6 +342,7 @@ document.addEventListener('click', (event) => {
   const list = event.target.closest('[data-notes-list]');
   if (list && !panel?.contains(list)) {
     event.preventDefault();
+    returnFocus = list;
     openList('all');
     return;
   }
@@ -236,6 +350,7 @@ document.addEventListener('click', (event) => {
   const existing = event.target.closest('[data-note-id]');
   if (existing && !panel?.contains(existing)) {
     event.preventDefault();
+    returnFocus = existing;
     openEditor({ id: existing.dataset.noteId });
   }
 });
@@ -243,3 +358,7 @@ document.addEventListener('click', (event) => {
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && panel?.classList.contains('is-open')) closePanel();
 });
+
+window.addEventListener('hangul-notes-changed', updateLauncher);
+
+ensureLauncher();
