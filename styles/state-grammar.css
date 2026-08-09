@@ -1,0 +1,158 @@
+/*
+ * Hangul Quest — state grammar + temporal feedback
+ * 07. Keep behavior consistent without making every surface look identical.
+ * 08. Let visible delight appear only when progress actually changes.
+ */
+
+/* ---------- 07 / Grammar: meaning stays consistent across contexts ---------- */
+.home-shell[data-ui-grammar="state-v1"] [data-ui-priority="primary"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home-shell[data-ui-grammar="state-v1"] [data-ui-priority="quiet"] {
+  --ui-focus-strength: .62;
+}
+
+.home-shell[data-ui-grammar="state-v1"] .stage-card.ui-state-current {
+  opacity: 1;
+}
+
+.home-shell[data-ui-grammar="state-v1"] .stage-card.ui-state-current .stage-arrow {
+  opacity: 1;
+}
+
+.home-shell[data-ui-grammar="state-v1"] .stage-card.ui-state-available .stage-arrow {
+  opacity: .68;
+}
+
+.home-shell[data-ui-grammar="state-v1"] .stage-card.ui-state-complete .stage-arrow {
+  opacity: .34;
+}
+
+.home-shell[data-ui-grammar="state-v1"] .stage-card.ui-state-locked {
+  cursor: not-allowed;
+}
+
+.home-shell[data-ui-grammar="state-v1"] .stage-card [data-ui-emphasis="quiet"] {
+  filter: saturate(.55);
+}
+
+.home-shell[data-ui-grammar="state-v1"] .stage-card [data-ui-emphasis="strong"] {
+  filter: saturate(1.02);
+}
+
+.home-shell[data-ui-grammar="state-v1"] .quest-board-action:focus-visible,
+.home-shell[data-ui-grammar="state-v1"] .stage-card.ui-state-current:focus-visible {
+  outline-color: color-mix(in srgb, var(--quest-stage-color, var(--accent)) 58%, white);
+}
+
+/* ---------- 08 / Time: change is the reward ---------- */
+.temporal-announcer {
+  position: fixed !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.home-shell.has-temporal-return .quest-board.is-temporal-updated {
+  animation: temporal-board-arrival .74s cubic-bezier(.2,.72,.22,1);
+}
+
+.home-shell.has-temporal-return .quest-board-dots i.is-newly-done {
+  animation: temporal-dot-arrival .46s cubic-bezier(.18,.78,.22,1) both;
+  animation-delay: calc(var(--temporal-index, 0) * 70ms);
+}
+
+.home-shell.has-temporal-return .route-rail.is-temporal-updated {
+  animation: temporal-route-arrival .82s ease-out both;
+}
+
+.home-shell.has-temporal-return .stage-card.is-newly-unlocked {
+  animation: temporal-stage-unlock .82s cubic-bezier(.18,.78,.22,1) both;
+}
+
+.home-shell.has-temporal-return .stage-card.is-newly-complete {
+  animation: temporal-stage-complete .72s ease-out both;
+}
+
+.home-shell.has-temporal-return .stage-card.is-new-current .stage-icon {
+  animation: temporal-current-arrival .78s cubic-bezier(.16,.8,.24,1) both;
+}
+
+.home-shell.has-temporal-return .mini-stat.is-temporal-updated strong {
+  animation: temporal-number-arrival .66s cubic-bezier(.18,.78,.22,1) both;
+}
+
+@keyframes temporal-board-arrival {
+  0% {
+    transform: translateY(0);
+    box-shadow: 0 12px 30px rgba(31,31,45,.058), 0 0 0 0 color-mix(in srgb, var(--quest-stage-color) 0%, transparent) !important;
+  }
+  42% {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 32px rgba(31,31,45,.07), 0 0 0 5px color-mix(in srgb, var(--quest-stage-color) 13%, transparent) !important;
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 12px 30px rgba(31,31,45,.058), 0 0 0 0 color-mix(in srgb, var(--quest-stage-color) 0%, transparent) !important;
+  }
+}
+
+@keyframes temporal-dot-arrival {
+  0% { transform: scaleX(.35) scaleY(.7); opacity: .38; }
+  58% { transform: scaleX(1.08) scaleY(1.26); opacity: 1; }
+  100% { transform: scaleX(1) scaleY(1); opacity: 1; }
+}
+
+@keyframes temporal-route-arrival {
+  0% { opacity: .48; filter: saturate(.72); }
+  42% { opacity: 1; filter: saturate(1.18); }
+  100% { opacity: 1; filter: saturate(1); }
+}
+
+@keyframes temporal-stage-unlock {
+  0% { opacity: .42; transform: translateX(-4px); filter: saturate(.35); }
+  52% { opacity: 1; transform: translateX(2px); filter: saturate(1.16); }
+  100% { opacity: 1; transform: translateX(0); filter: saturate(1); }
+}
+
+@keyframes temporal-stage-complete {
+  0% { opacity: .64; transform: translateX(0); }
+  48% { opacity: 1; transform: translateX(2px); }
+  100% { opacity: .84; transform: translateX(0); }
+}
+
+@keyframes temporal-current-arrival {
+  0% { transform: scale(.88) rotate(-2deg); filter: saturate(.75); }
+  52% { transform: scale(1.075) rotate(1deg); filter: saturate(1.16); }
+  100% { transform: scale(1.035) rotate(0); filter: saturate(1); }
+}
+
+@keyframes temporal-number-arrival {
+  0% { transform: translateY(4px); opacity: .52; }
+  52% { transform: translateY(-2px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 620px) {
+  .home-shell.has-temporal-return .stage-card.is-newly-unlocked {
+    animation-duration: .68s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-shell.has-temporal-return .quest-board.is-temporal-updated,
+  .home-shell.has-temporal-return .quest-board-dots i.is-newly-done,
+  .home-shell.has-temporal-return .route-rail.is-temporal-updated,
+  .home-shell.has-temporal-return .stage-card.is-newly-unlocked,
+  .home-shell.has-temporal-return .stage-card.is-newly-complete,
+  .home-shell.has-temporal-return .stage-card.is-new-current .stage-icon,
+  .home-shell.has-temporal-return .mini-stat.is-temporal-updated strong {
+    animation: none !important;
+  }
+}
