@@ -13,6 +13,22 @@
   --ui-focus-strength: .62;
 }
 
+/* Quest copy: one headline, one quiet supporting line. */
+.home-shell[data-ui-grammar="state-v1"] .quest-board .hero-copy-lead {
+  display: block;
+}
+
+.home-shell[data-ui-grammar="state-v1"] .quest-board .hero-copy-follow {
+  display: block;
+  width: fit-content;
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: clamp(14px, 1.65vw, 17px);
+  font-weight: 580;
+  line-height: 1.55;
+  letter-spacing: -.018em;
+}
+
 .home-shell[data-ui-grammar="state-v1"] .stage-card.ui-state-current {
   opacity: 1;
 }
@@ -140,6 +156,11 @@
 }
 
 @media (max-width: 620px) {
+  .home-shell[data-ui-grammar="state-v1"] .quest-board .hero-copy-follow {
+    margin-top: 7px;
+    font-size: 14px;
+  }
+
   .home-shell.has-temporal-return .stage-card.is-newly-unlocked {
     animation-duration: .68s;
   }
