@@ -25,22 +25,49 @@ function polishTopbar(home) {
   setNavIcon(topbar.querySelector('[data-action="settings"]'), '⚙', '設定');
 }
 
-function polishHero(home) {
+function reshapeOpening(home) {
   const hero = home.querySelector('.today-section, .hero');
-  if (!hero) return;
+  if (!hero || hero.dataset.openingReady === 'true') return;
+  hero.dataset.openingReady = 'true';
+  hero.classList.add('opening-spread');
 
   hero.querySelector('.hero-kicker')?.remove();
+  hero.querySelector('.hero-copy')?.remove();
+  hero.querySelector('.level-panel')?.remove();
 
   const heading = hero.querySelector('h1');
-  if (heading && heading.dataset.copyPolished !== 'true') {
+  if (heading) {
     const complete = /ノルマ達成|クリア済み|達成/.test(heading.textContent || '');
     heading.innerHTML = complete
       ? '<span class="hero-copy-lead">今日の5問は完了。</span> <span class="hero-copy-follow">もう少しやるなら、ここから。</span>'
       : '<span class="hero-copy-lead">今日は5問だけ。</span> <span class="hero-copy-follow">読める文字を、少し増やす。</span>';
-    heading.dataset.copyPolished = 'true';
   }
 
-  hero.querySelector('.quest-panel-copy > span')?.remove();
+  const quest = hero.querySelector('.quest-panel');
+  if (quest) {
+    const ring = quest.querySelector('.quest-ring');
+    const degrees = Number.parseFloat(ring?.style.getPropertyValue('--quest-progress')) || 0;
+    const ratio = Math.max(0, Math.min(100, Math.round((degrees / 360) * 100)));
+    const answered = ring?.querySelector('strong')?.textContent?.trim() || '0';
+    const totalText = ring?.querySelector('span')?.textContent || '/5問';
+    const total = totalText.match(/\d+/)?.[0] || '5';
+    const status = quest.querySelector('.quest-panel-copy strong')?.textContent?.trim() || '';
+
+    quest.classList.add('opening-progress');
+    quest.setAttribute('aria-label', `今日の進捗 ${answered}/${total}`);
+    quest.innerHTML = `
+      <div class="opening-progress-count"><strong>${answered}</strong><span>/ ${total}</span></div>
+      <div class="opening-progress-track" aria-hidden="true"><i style="width:${ratio}%"></i></div>
+      <small>${status}</small>
+    `;
+  }
+
+  const primary = hero.querySelector('.primary-button--hero');
+  if (primary) {
+    primary.classList.add('opening-action');
+    hero.append(primary);
+  }
+  hero.querySelector('.hero-actions')?.remove();
 }
 
 function simplifySectionHeadings(home) {
@@ -60,12 +87,21 @@ function simplifySectionHeadings(home) {
   home.querySelector('.starter-title span')?.remove();
 }
 
+function markEditorialLayout(home) {
+  home.classList.add('editorial-home');
+  home.querySelector('.current-location-section')?.classList.add('editorial-map');
+  home.querySelector('.field-notes-section')?.classList.add('editorial-notes');
+  home.querySelector('.record-section')?.classList.add('editorial-record');
+  home.querySelector('.practice-config')?.classList.add('editorial-practice');
+}
+
 function polishHome() {
   const home = app?.querySelector('.home-shell');
   if (!home) return;
   polishTopbar(home);
-  polishHero(home);
+  reshapeOpening(home);
   simplifySectionHeadings(home);
+  markEditorialLayout(home);
 }
 
 if (app) {
