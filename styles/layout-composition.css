@@ -12,7 +12,6 @@
       "topbar topbar"
       "starter starter"
       "quest quest"
-      "route notes"
       "route record"
       "route practice"
       "expansion expansion"
@@ -28,7 +27,6 @@
   .home-shell.playable-home > .today-section.quest-board { grid-area: quest; }
   .home-shell.playable-home > .quest-map,
   .home-shell.playable-home > .current-location-section.quest-map { grid-area: route; }
-  .home-shell.playable-home > .discovery-notes { grid-area: notes; }
   .home-shell.playable-home > .quiet-record { grid-area: record; }
   .home-shell.playable-home > .practice-surface { grid-area: practice; }
   .home-shell.playable-home > .learning-expansion { grid-area: expansion; }
@@ -96,48 +94,13 @@
   }
 
   /* Sidecar: same baseline, less area. No card stack. */
-  .home-shell.playable-home > .discovery-notes,
   .home-shell.playable-home > .quiet-record,
   .home-shell.playable-home > .practice-surface {
     min-width: 0;
   }
 
-  .home-shell.playable-home > .discovery-notes {
-    margin: 40px 0 0;
-    padding: 0 0 2px 17px;
-    border-top: 0;
-  }
-
-  .home-shell.playable-home > .discovery-notes::before {
-    top: 2px;
-    bottom: 3px;
-  }
-
-  .home-shell.playable-home .discovery-notes .field-notes-heading {
-    display: grid;
-    grid-template-columns: 1fr;
-    align-items: start;
-    gap: 9px;
-    margin: 0 0 11px 2px;
-  }
-
-  .home-shell.playable-home .discovery-notes .field-notes-actions {
-    justify-content: flex-start;
-    gap: 12px;
-  }
-
-  .home-shell.playable-home .discovery-notes .field-note-row {
-    grid-template-columns: 50px minmax(0, 1fr) auto;
-    gap: 9px;
-    padding: 12px 1px;
-  }
-
-  .home-shell.playable-home .discovery-notes .field-note-row strong {
-    font-size: 16px;
-  }
-
   .home-shell.playable-home > .quiet-record {
-    margin: 25px 0 0;
+    margin: 40px 0 0;
     padding: 21px 0 0;
   }
 
