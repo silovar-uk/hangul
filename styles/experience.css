@@ -4,6 +4,7 @@
   --text-secondary: 11px;
 }
 
+/* Readability first: retire micro text on core surfaces. */
 .home-shell .section-kicker,
 .home-shell .config-label,
 .home-shell .starter-title span,
@@ -18,6 +19,7 @@
 .home-shell .section-heading p,
 .game-shell .feedback-learning p { font-size: 12px; }
 
+/* TODAY: one strong surface, no nested dashboard. */
 .today-section { grid-template-columns: minmax(0, 1fr) auto; align-items: center; padding: 30px 32px; }
 .today-section .hero-copy { display: none; }
 .today-section .hero-actions { margin-top: 22px; }
@@ -27,10 +29,11 @@
 .today-section .quest-ring::before { width: 60px; height: 60px; }
 .today-section .quest-panel-copy p { font-size: 11px; }
 
+/* Location: a route, not a stack of cards. */
 .current-location-section { margin: 38px 0 0; }
 .current-location-section .stage-heading { margin: 0; padding: 0 0 16px; border-bottom: 0; }
 .current-location-section .stage-grid { position: relative; width: 100%; margin: 0; padding: 4px 0 4px 38px; border-top: 1px solid var(--line-soft); }
-.current-location-section .route-rail { position: absolute; z-index: 0; top: 31px; bottom: 34px; left: 18px; width: 2px; background: linear-gradient(var(--ink) 0 42%, var(--line) 42% 100%); }
+.current-location-section .route-rail { position: absolute; z-index: 0; top: 31px; bottom: 34px; left: 18px; width: 2px; background: linear-gradient(to bottom, var(--ink) 0 var(--route-progress, 0%), var(--line) var(--route-progress, 0%) 100%); }
 .current-location-section .stage-card,
 .current-location-section .stage-card:has(.status-open) { position: relative; z-index: 1; display: grid; grid-template-columns: 58px minmax(0,1fr) auto; align-items: center; gap: 15px; width: 100% !important; min-height: 88px; margin: 0 !important; padding: 15px 8px 15px 18px !important; border: 0 !important; border-bottom: 1px solid var(--line-soft) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; overflow: visible; }
 .current-location-section .stage-card::after,
@@ -55,8 +58,10 @@
 .current-location-section .stage-card[data-map-state="complete"] { color: #454b42; }
 .current-location-section .stage-card[data-map-state="locked"] { opacity: .42; }
 
+/* Field notes: editorial margin notes, not cards. */
 .field-notes-section { margin: 38px 0 0; padding: 28px 0 0; border-top: 1px solid var(--line); }
 .field-notes-heading { margin-bottom: 12px; }
+.field-notes-actions { display: flex; align-items: center; gap: 14px; }
 .field-notes-preview { border-top: 1px solid var(--line-soft); }
 .field-note-row { display: grid; grid-template-columns: 62px minmax(0,1fr) auto; align-items: center; gap: 12px; width: 100%; padding: 13px 2px; border: 0; border-bottom: 1px solid var(--line-soft); background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
 .field-note-row strong { font-size: 18px; }
@@ -65,6 +70,7 @@
 .field-notes-empty { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 2px; color: var(--muted); font-size: 12px; }
 .field-notes-empty button { min-height: 38px; padding: 0 12px; border: 1px solid var(--ink); border-radius: 8px; background: transparent; color: var(--ink); cursor: pointer; font-weight: 850; }
 
+/* Record: values, not dashboard cards. */
 .record-section { margin: 38px 0 0; padding-top: 28px; border-top: 1px solid var(--line); }
 .record-section > .section-heading { margin-bottom: 14px; }
 .record-section .record-values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 0; }
@@ -74,6 +80,7 @@
 .record-section .mini-stat strong { font-size: 22px; }
 .record-section .mini-stat small { margin-top: 4px; font-size: 11px; }
 
+/* Practice: controls are allowed to look interactive. */
 .home-shell .practice-config { margin-top: 38px; padding: 28px 0 0; border: 0; border-top: 1px solid var(--line); }
 .home-shell .practice-config .compact-heading { margin-bottom: 18px; }
 .home-shell .segment-control { background: #e8e2d8; }
@@ -82,6 +89,7 @@
 .home-shell .practice-weak-action .rival-meter,
 .home-shell .practice-weak-action > small { display: none; }
 
+/* Answer feedback becomes a small observation page. */
 .learning-insight { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line-soft); }
 .insight-coordinate > span { display: block; color: var(--ink); font-size: 16px; font-weight: 900; letter-spacing: .01em; }
 .insight-coordinate > small { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; line-height: 1.6; }
