@@ -1,0 +1,206 @@
+/*
+ * Hangul Quest — learning rewards
+ * Delight follows learning meaning: small for one answer, stronger for milestones.
+ * No new point system; existing mastery and progression become the reward language.
+ */
+
+.learning-reward {
+  --reward-color: #63813c;
+  color: var(--ink);
+}
+
+.learning-reward-label {
+  color: #587337;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.learning-reward-body strong,
+.learning-reward-body small {
+  display: block;
+}
+
+.learning-reward-body strong {
+  font-weight: 760;
+  letter-spacing: -.02em;
+}
+
+.learning-reward-body small {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* One correct answer: a quiet confirmation, not a celebration card. */
+.game-shell .learning-reward--micro {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+  margin-top: 13px;
+  padding: 11px 0 1px;
+  border-top: 1px solid var(--line-soft);
+  animation: learning-reward-micro .34s cubic-bezier(.2,.72,.22,1) both;
+}
+
+.game-shell .learning-reward--micro .learning-reward-label {
+  padding-top: 2px;
+}
+
+.game-shell .learning-reward--micro .learning-reward-body strong {
+  font-size: 12px;
+}
+
+.game-shell .learning-reward--micro .learning-reward-body small {
+  margin-top: 3px;
+  font-size: 10px;
+}
+
+/* Result reward: intensity is proportional to the learning event. */
+.result-shell .learning-reward--summary {
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr);
+  gap: 15px;
+  align-items: start;
+  margin: 20px 0 4px;
+  padding: 15px 0;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  text-align: left;
+}
+
+.result-shell .learning-reward--summary .learning-reward-label {
+  padding-top: 3px;
+}
+
+.result-shell .learning-reward--summary .learning-reward-body strong {
+  font-size: 17px;
+}
+
+.result-shell .learning-reward--summary .learning-reward-body small {
+  margin-top: 4px;
+  font-size: 10px;
+}
+
+/* Daily goal: one step stronger, still restrained. */
+.result-shell .learning-reward--summary[data-reward-level="medium"] {
+  margin-top: 21px;
+  padding: 16px 17px;
+  border: 1px solid rgba(99,129,60,.18);
+  border-radius: 12px;
+  background: rgba(234,246,208,.52);
+  animation: learning-reward-medium .52s cubic-bezier(.18,.78,.22,1) both;
+}
+
+/* Stage unlock: the strongest reward because the world actually changed. */
+.result-shell .learning-reward--summary[data-reward-level="strong"] {
+  --reward-color: var(--yellow);
+  position: relative;
+  overflow: hidden;
+  margin-top: 22px;
+  padding: 18px 18px 17px 21px;
+  border: 1px solid rgba(23,26,43,.09);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 96% 4%, rgba(255,212,94,.30), transparent 8rem),
+    rgba(255,253,248,.88);
+  box-shadow: 0 8px 22px rgba(31,31,45,.055);
+  animation: learning-reward-strong .7s cubic-bezier(.18,.8,.22,1) both;
+}
+
+.result-shell .learning-reward--summary[data-reward-level="strong"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--reward-color);
+}
+
+.result-shell .learning-reward--summary[data-reward-level="strong"] .learning-reward-label {
+  color: #8a6818;
+}
+
+.result-shell .learning-reward--summary[data-reward-level="strong"] .learning-reward-body strong {
+  font-size: 19px;
+}
+
+/* Existing growth data is translated from generic numeric gain into learning meaning. */
+.result-shell .growth-panel h3 {
+  letter-spacing: -.015em;
+}
+
+.result-shell .growth-list > div {
+  position: relative;
+}
+
+.result-shell .growth-list em {
+  color: #5d6f43;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: right;
+}
+
+.result-shell .growth-list > div.is-newly-mastered {
+  border: 1px solid rgba(99,129,60,.20);
+  background: #fbfff3;
+}
+
+.result-shell .growth-list > div.is-newly-mastered::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #63813c;
+}
+
+.result-shell .growth-list > div.is-newly-mastered em {
+  padding-right: 10px;
+  color: #587337;
+}
+
+@keyframes learning-reward-micro {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes learning-reward-medium {
+  0% { opacity: .55; transform: translateY(5px); }
+  58% { opacity: 1; transform: translateY(-1px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes learning-reward-strong {
+  0% { opacity: .45; transform: translateY(7px) scale(.992); }
+  50% { opacity: 1; transform: translateY(-2px) scale(1.004); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 620px) {
+  .game-shell .learning-reward--micro,
+  .result-shell .learning-reward--summary {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .game-shell .learning-reward--micro .learning-reward-label,
+  .result-shell .learning-reward--summary .learning-reward-label {
+    padding-top: 0;
+  }
+
+  .result-shell .learning-reward--summary[data-reward-level="medium"],
+  .result-shell .learning-reward--summary[data-reward-level="strong"] {
+    padding: 15px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-shell .learning-reward--micro,
+  .result-shell .learning-reward--summary[data-reward-level="medium"],
+  .result-shell .learning-reward--summary[data-reward-level="strong"] {
+    animation: none !important;
+  }
+}
