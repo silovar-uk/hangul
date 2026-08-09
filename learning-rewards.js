@@ -86,8 +86,8 @@ function enhanceFeedback() {
   }
 
   // experience-layer may add the formal comparison after the first pass.
-  // Keeping this last makes the reward read as the conclusion of the feedback.
-  learning.append(reward);
+  // Move the reward only when needed so MutationObserver does not loop on itself.
+  if (learning.lastElementChild !== reward) learning.append(reward);
 }
 
 function readGrowthItems(result) {
