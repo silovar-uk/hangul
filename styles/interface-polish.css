@@ -1,423 +1,536 @@
-/* Editorial game surface: spacious, asymmetric, and specific to Hangul. */
-.home-shell.editorial-home {
-  --editorial-gap: clamp(68px, 9vw, 112px);
-  position: relative;
+/*
+ * Playable hierarchy
+ * Order first, play second, one deliberate break in FIELD NOTES.
+ * Structure = stable web app. Delight = quest, current stage, interaction.
+ */
+
+.home-shell.playable-home {
+  --section-gap: 42px;
   width: min(100%, 980px);
 }
 
-/* Header behaves like a light game-system bar, not a row of cards. */
+/* ---------- System bar: quiet, clear, still playful ---------- */
 .home-shell .system-topbar {
-  min-height: 48px;
-  margin-bottom: 8px;
-  padding: 0;
-  border: 0;
+  min-height: 54px;
+  margin-bottom: 18px;
+  padding: 0 2px 12px;
+  border-bottom: 1px solid var(--line-soft);
 }
-.home-shell .system-topbar .brand { gap: 9px; min-width: 0; }
+.home-shell .system-topbar .brand { gap: 10px; min-width: 0; }
 .home-shell .system-topbar .brand-mark {
-  width: auto;
-  height: auto;
-  border-radius: 0;
-  background: transparent;
-  color: var(--ink);
-  box-shadow: none;
-  font-size: 22px;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(23,26,43,.12);
+  font-size: 18px;
   font-weight: 950;
 }
-.home-shell .system-topbar .brand-text { min-width: 0; }
 .home-shell .system-topbar .brand-text strong {
   display: block;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.2;
-  letter-spacing: -.03em;
+  letter-spacing: -.035em;
   white-space: nowrap;
 }
 .home-shell .system-topbar .brand-text small { display: none !important; }
-.home-shell .system-topbar .topbar-actions { gap: 2px; }
+.home-shell .system-topbar .topbar-actions { gap: 4px; }
 .home-shell .system-topbar .system-nav-button {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   padding: 0;
   border: 0;
-  border-radius: 50%;
+  border-radius: 10px;
   background: transparent;
   box-shadow: none;
   color: var(--ink);
   transition: background .14s ease, transform .14s ease;
 }
-.home-shell .system-topbar .system-nav-button:hover { background: rgba(23,26,43,.055); transform: none; }
-.home-shell .system-topbar .system-nav-button:active { background: rgba(23,26,43,.09); transform: scale(.94); }
+.home-shell .system-topbar .system-nav-button:hover { background: rgba(23,26,43,.055); }
+.home-shell .system-topbar .system-nav-button:active { transform: scale(.94); background: rgba(23,26,43,.09); }
 .home-shell .system-topbar .system-nav-symbol { font-size: 14px; font-weight: 900; line-height: 1; }
 
-/* Opening spread: no hero card. Copy, progress and action share the page itself. */
-.home-shell .opening-spread,
-.home-shell .today-section.opening-spread {
+/* ---------- Today: strongest surface ---------- */
+.home-shell .quest-board,
+.home-shell .today-section.quest-board {
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(190px, .55fr);
+  grid-template-columns: minmax(0, 1fr) minmax(210px, 270px);
   grid-template-areas:
     "copy progress"
-    "copy action";
-  gap: 28px 54px;
-  min-height: 310px;
+    "actions progress";
+  gap: 24px 38px;
+  min-height: 248px;
   margin: 0;
-  padding: clamp(58px, 8vw, 86px) 4% 42px 1% !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
+  padding: 34px 36px 32px !important;
+  border: 1px solid rgba(23,26,43,.09) !important;
+  border-radius: 22px !important;
+  background: var(--surface) !important;
   color: var(--ink) !important;
-  box-shadow: none !important;
+  box-shadow: 0 14px 34px rgba(31,31,45,.08) !important;
 }
-.home-shell .opening-spread::before {
+.home-shell .quest-board::before {
   content: "";
   position: absolute;
-  top: 36px;
-  right: 20%;
-  width: 1px;
-  height: 68px;
-  background: var(--line);
-  pointer-events: none;
+  top: 0;
+  left: 34px;
+  width: 72px;
+  height: 5px;
+  border-radius: 0 0 999px 999px;
+  background: var(--accent);
 }
-.home-shell .opening-spread::after {
-  content: "ㅏ";
-  position: absolute;
-  z-index: 0;
-  top: 12px;
-  right: 5%;
-  bottom: auto;
-  color: rgba(23,26,43,.055);
-  font-size: clamp(82px, 11vw, 124px);
-  font-weight: 800;
-  letter-spacing: 0;
-  transform: none;
-  pointer-events: none;
-}
-.home-shell .opening-spread .hero-copy-block {
+.home-shell .quest-board::after { display: none !important; }
+.home-shell .quest-board .hero-copy-block {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   grid-area: copy;
-  align-self: start;
+  align-self: center;
   min-width: 0;
 }
-.home-shell .opening-spread .hero-copy-block h1 {
+.home-shell .quest-board .hero-copy-block h1 {
   margin: 0;
-  max-width: 10.5em;
+  max-width: 12em;
   color: var(--ink);
-  font-size: clamp(43px, 6vw, 64px);
-  font-weight: 860;
-  line-height: 1.08;
-  letter-spacing: -.058em;
+  font-size: clamp(36px, 5vw, 48px);
+  font-weight: 880;
+  line-height: 1.12;
+  letter-spacing: -.055em;
   white-space: normal;
   word-break: normal;
   text-wrap: pretty;
 }
-.home-shell .opening-spread .hero-copy-lead,
-.home-shell .opening-spread .hero-copy-follow { display: inline; }
-.home-shell .opening-spread .hero-copy-follow {
+.home-shell .quest-board .hero-copy-lead,
+.home-shell .quest-board .hero-copy-follow { display: inline; }
+.home-shell .quest-board .hero-copy-follow {
   color: var(--ink-soft);
-  font-weight: 620;
+  font-weight: 650;
 }
-.home-shell .opening-spread .hero-copy,
-.home-shell .opening-spread .hero-kicker,
-.home-shell .opening-spread .level-panel,
-.home-shell .opening-spread .hero-actions { display: none !important; }
+.home-shell .quest-board .hero-kicker,
+.home-shell .quest-board .hero-copy,
+.home-shell .quest-board .level-panel,
+.home-shell .quest-board .secondary-button--dark { display: none !important; }
 
-.home-shell .opening-spread .opening-progress {
+.home-shell .quest-board .quest-board-actions {
   position: relative;
-  z-index: 1;
+  z-index: 3;
+  grid-area: actions;
+  align-self: end;
+  display: flex;
+  gap: 10px;
+  margin: 0;
+}
+.home-shell .quest-board .quest-board-action {
+  min-height: 48px;
+  padding: 0 19px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(217,74,67,.2);
+  font-size: 13px;
+  font-weight: 900;
+}
+.home-shell .quest-board .quest-board-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 11px 24px rgba(217,74,67,.24);
+}
+.home-shell .quest-board .quest-board-action:active { transform: translateY(0) scale(.98); }
+.home-shell .quest-board .quest-board-action b { margin-left: 13px; font-size: 16px; }
+
+.home-shell .quest-board-progress {
+  position: relative;
+  z-index: 3;
   grid-area: progress;
   align-self: end;
-  display: block;
   min-width: 0;
-  width: min(100%, 230px);
-  margin: 0 0 26px auto;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  color: var(--ink);
-  box-shadow: none !important;
-  backdrop-filter: none;
-}
-.opening-progress-count { display: flex; align-items: baseline; gap: 5px; }
-.opening-progress-count strong { font-size: 34px; line-height: 1; letter-spacing: -.06em; }
-.opening-progress-count span { color: var(--muted); font-size: 12px; font-weight: 800; }
-.opening-progress-track { position: relative; overflow: visible; width: 100%; height: 1px; margin-top: 11px; background: var(--line); }
-.opening-progress-track i { position: relative; display: block; height: 2px; background: var(--ink); transform: translateY(-.5px); }
-.opening-progress-track i::after { content: ""; position: absolute; top: 50%; right: -3px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); transform: translateY(-50%); }
-.home-shell .opening-progress > small { display: block; margin-top: 9px; color: var(--muted); font-size: 11px; }
-
-.home-shell .opening-spread .opening-action {
-  position: relative;
-  z-index: 1;
-  grid-area: action;
-  justify-self: end;
-  align-self: start;
-  min-width: 0;
-  min-height: 42px;
-  padding: 0 3px;
-  border: 0;
-  border-bottom: 1px solid var(--ink);
-  border-radius: 0;
-  background: transparent;
+  margin: 0;
+  padding: 20px 18px 18px;
+  border: 1px solid var(--line-soft);
+  border-radius: 15px;
+  background: rgba(244,239,228,.64);
   color: var(--ink);
   box-shadow: none;
-  font-size: 13px;
 }
-.home-shell .opening-spread .opening-action:hover { transform: translateX(4px); box-shadow: none; }
-.home-shell .opening-spread .opening-action span { margin-left: 0; margin-right: 18px; }
-.home-shell .opening-spread .opening-action b { font-size: 16px; }
+.quest-board-progress-copy { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+.quest-board-progress-copy strong { font-size: 30px; line-height: 1; letter-spacing: -.06em; }
+.quest-board-progress-copy strong span { color: var(--muted); font-size: 13px; font-weight: 800; letter-spacing: 0; }
+.quest-board-progress-copy small { color: var(--muted); font-size: 11px; font-weight: 800; }
+.quest-board-dots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; margin-top: 15px; }
+.quest-board-dots i {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: #ddd6ca;
+}
+.quest-board-dots i.is-done { background: var(--ink); }
+.quest-board-dots i.is-next { background: var(--yellow); box-shadow: inset 0 0 0 1px rgba(23,26,43,.08); }
 
-/* First-use guide is editorial copy, not a card. */
+.quest-board-letters {
+  position: absolute;
+  z-index: 1;
+  top: 27px;
+  right: 35px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  pointer-events: none;
+}
+.quest-board-letters span {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(23,26,43,.06);
+  border-radius: 14px;
+  color: var(--ink);
+  font-size: 21px;
+  font-weight: 950;
+}
+.quest-board-letters span:nth-child(1) { background: #ffb0aa; }
+.quest-board-letters span:nth-child(2) { background: var(--yellow); transform: translateY(7px) rotate(2deg); }
+.quest-board-letters span:nth-child(3) { background: var(--blue); transform: translateY(1px); }
+
+/* ---------- First use: compact guide, not another hero ---------- */
 .home-shell .starter-guide {
-  width: 78%;
-  margin: 28px 0 0 10%;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: 13px;
+  background: rgba(255,253,248,.66);
   box-shadow: none;
 }
 .home-shell .starter-title > span { display: none !important; }
 
-/* Map: one route. Text drifts around the line to create rhythm. */
-.home-shell .editorial-map {
-  width: 88%;
-  margin: var(--editorial-gap) 0 0 7%;
+/* ---------- Map: strong grid + game state ---------- */
+.home-shell .quest-map,
+.home-shell .current-location-section.quest-map {
+  width: 100%;
+  margin: var(--section-gap) 0 0;
 }
-.home-shell .editorial-map .stage-heading { margin: 0 0 18px 8%; padding: 0; border: 0; }
-.home-shell .editorial-map .section-kicker,
-.home-shell .editorial-map .stage-heading p { display: none !important; }
-.home-shell .editorial-map .stage-heading h2 {
+.home-shell .quest-map .stage-heading {
+  margin: 0 0 15px;
+  padding: 0;
+  border: 0;
+}
+.home-shell .quest-map .stage-heading h2 {
   margin: 0;
-  font-size: clamp(24px, 3vw, 31px);
-  line-height: 1.15;
-  letter-spacing: -.045em;
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -.04em;
 }
-.home-shell .editorial-map .stage-grid {
+.home-shell .quest-map .section-kicker,
+.home-shell .quest-map .stage-heading p { display: none !important; }
+.home-shell .quest-map .stage-grid {
   position: relative;
   width: 100%;
   margin: 0;
-  padding: 6px 0 14px 70px !important;
+  padding: 4px 0 4px 46px !important;
   border: 0 !important;
 }
-.home-shell .editorial-map .route-rail {
-  top: 34px;
-  bottom: 40px;
-  left: 25px;
-  width: 1px;
+.home-shell .quest-map .route-rail {
+  top: 31px;
+  bottom: 34px;
+  left: 18px;
+  width: 2px;
   background: linear-gradient(to bottom, var(--ink) 0 var(--route-progress, 0%), var(--line) var(--route-progress, 0%) 100%);
 }
-.home-shell .editorial-map .stage-card,
-.home-shell .editorial-map .stage-card:has(.status-open),
-.home-shell .editorial-map .stage-card[data-map-state="current"] {
+.home-shell .quest-map .stage-card,
+.home-shell .quest-map .stage-card:has(.status-open),
+.home-shell .quest-map .stage-card[data-map-state="current"] {
   position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0,1fr) auto;
-  gap: 0;
+  grid-template-columns: 60px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 15px;
   width: 100% !important;
-  min-height: 106px;
+  min-height: 84px;
   margin: 0 !important;
-  padding: 22px 0 22px 24px !important;
+  padding: 13px 12px 13px 16px !important;
   border: 0 !important;
+  border-bottom: 1px solid var(--line-soft) !important;
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
   color: var(--ink);
   overflow: visible;
+  transition: background .14s ease, transform .14s ease, box-shadow .14s ease;
 }
-.home-shell .editorial-map .stage-card:hover:not(:disabled) { transform: none; box-shadow: none; }
-.home-shell .editorial-map .stage-card:hover:not(:disabled) h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
-.home-shell .editorial-map .stage-card::before,
-.home-shell .editorial-map .stage-card::after { display: none !important; }
-.home-shell .editorial-map .stage-icon,
-.home-shell .editorial-map .stage-arrow,
-.home-shell .editorial-map .stage-topline,
-.home-shell .editorial-map .stage-progress-line { display: none !important; }
-.home-shell .editorial-map .stage-body { grid-column: 1; min-width: 0; }
-.home-shell .editorial-map .stage-card:nth-of-type(even) .stage-body { padding-left: clamp(28px, 7vw, 76px); }
-.home-shell .editorial-map .stage-card h3 {
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.35;
-  letter-spacing: -.035em;
+.home-shell .quest-map .stage-card::before,
+.home-shell .quest-map .stage-card::after { display: none !important; }
+.home-shell .quest-map .stage-card:hover:not(:disabled):not([data-map-state="current"]) {
+  background: rgba(255,253,248,.5) !important;
 }
-.home-shell .editorial-map .stage-card p {
-  display: none;
-  max-width: 30em;
-  margin: 7px 0 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
-.home-shell .editorial-map .stage-card[data-map-state="current"] p { display: block; }
-.home-shell .editorial-map .stage-card[data-map-state="current"] h3::after {
-  content: "いまここ";
-  display: inline-block;
-  margin-left: 11px;
-  color: var(--accent-dark);
-  font-size: 10px;
-  font-weight: 850;
-  letter-spacing: .02em;
-  vertical-align: .15em;
-}
-.home-shell .editorial-map .stage-rail {
+.home-shell .quest-map .stage-rail {
   position: absolute;
-  left: -68px;
+  left: -46px;
   top: 50%;
-  width: 56px;
+  width: 36px;
   transform: translateY(-50%);
   text-align: center;
 }
-.home-shell .editorial-map .stage-rail i { display: none; }
-.home-shell .editorial-map .stage-rail > span:not(.map-marker) {
+.home-shell .quest-map .stage-rail i { display: none; }
+.home-shell .quest-map .stage-rail > span:not(.map-marker) {
   display: block;
-  margin-top: 7px;
+  margin-top: 5px;
   color: var(--muted);
   font-size: 10px;
   font-weight: 850;
-  letter-spacing: .12em;
 }
-.home-shell .editorial-map .map-marker {
+.home-shell .quest-map .map-marker {
   display: block;
-  width: 11px;
-  height: 11px;
+  width: 13px;
+  height: 13px;
   margin: 0 auto;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: 50%;
   background: var(--paper);
-  box-shadow: 0 0 0 6px var(--paper);
+  box-shadow: 0 0 0 5px var(--paper);
 }
-.home-shell .editorial-map .stage-card[data-map-state="complete"] .map-marker { border-color: var(--ink); background: var(--ink); }
-.home-shell .editorial-map .stage-card[data-map-state="complete"] .map-marker::after { content: ""; }
-.home-shell .editorial-map .stage-card[data-map-state="current"] .map-marker { width: 13px; height: 13px; border-color: var(--accent); background: var(--accent); }
-.home-shell .editorial-map .stage-card[data-map-state="locked"] { opacity: .34; }
+.home-shell .quest-map .stage-icon {
+  display: grid !important;
+  place-items: center;
+  grid-column: 1;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(23,26,43,.06);
+  border-radius: 13px;
+  box-shadow: none;
+  font-size: 20px;
+  font-weight: 950;
+}
+.home-shell .quest-map .stage-body { grid-column: 2; min-width: 0; padding: 0 !important; }
+.home-shell .quest-map .stage-topline,
+.home-shell .quest-map .stage-progress-line { display: none !important; }
+.home-shell .quest-map .stage-card h3 { margin: 0; font-size: 17px; line-height: 1.3; letter-spacing: -.035em; }
+.home-shell .quest-map .stage-card p { display: none; margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.home-shell .quest-map .stage-arrow { display: block !important; grid-column: 3; color: var(--muted); font-size: 17px; }
 
-/* Sections do not share one left edge: page rhythm replaces stacked components. */
-.home-shell .editorial-notes {
-  width: 74%;
-  margin: var(--editorial-gap) 0 0 4%;
-  padding: 0;
-  border: 0;
+.home-shell .quest-map .stage-card[data-map-state="complete"] .map-marker { border-color: #63813c; background: #63813c; }
+.home-shell .quest-map .stage-card[data-map-state="complete"] .map-marker::after {
+  content: "✓";
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 8px;
+  line-height: 9px;
 }
-.home-shell .editorial-notes .field-notes-heading { margin-bottom: 18px; }
-.home-shell .editorial-notes .section-kicker { color: var(--accent-dark); font-size: 10px; letter-spacing: .11em; }
-.home-shell .editorial-notes .field-notes-preview { border-top: 0; }
-.home-shell .editorial-notes .field-note-row { padding: 14px 0; border-bottom-color: var(--line-soft); }
+.home-shell .quest-map .stage-card[data-map-state="current"] {
+  margin: 7px 0 !important;
+  padding: 16px 15px 16px 16px !important;
+  border: 1px solid rgba(23,26,43,.12) !important;
+  border-radius: 14px !important;
+  background: var(--surface) !important;
+  box-shadow: 0 9px 22px rgba(31,31,45,.07) !important;
+}
+.home-shell .quest-map .stage-card[data-map-state="current"] .map-marker {
+  width: 15px;
+  height: 15px;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.home-shell .quest-map .stage-card[data-map-state="current"] .stage-icon { transform: scale(1.04); }
+.home-shell .quest-map .stage-card[data-map-state="current"] p { display: block; }
+.home-shell .quest-map .stage-card[data-map-state="current"] h3::after {
+  content: "いまここ";
+  display: inline-flex;
+  margin-left: 9px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(255,102,94,.1);
+  color: var(--accent-dark);
+  font-size: 10px;
+  font-weight: 900;
+  vertical-align: .1em;
+}
+.home-shell .quest-map .stage-card[data-map-state="locked"] { opacity: .42; }
 
-.home-shell .editorial-record {
-  width: 64%;
-  margin: var(--editorial-gap) 6% 0 auto;
-  padding: 0;
+/* ---------- FIELD NOTES: the one deliberate break ---------- */
+.home-shell .discovery-notes {
+  width: calc(100% - 28px);
+  margin: var(--section-gap) 0 0 28px;
+  padding: 20px 0 3px 20px;
+  border: 0;
+  border-left: 3px solid var(--accent);
+}
+.home-shell .discovery-notes .field-notes-heading { margin: 0 0 11px; }
+.home-shell .discovery-notes .section-kicker {
+  display: block !important;
+  color: var(--accent-dark);
+  font-size: 10px;
+  letter-spacing: .11em;
+}
+.home-shell .discovery-notes .field-notes-heading h2 { margin-top: 3px; font-size: 22px; }
+.home-shell .discovery-notes .field-notes-heading p { margin-top: 4px; font-size: 12px; }
+.home-shell .discovery-notes .field-notes-preview { border-top: 1px solid var(--line-soft); }
+.home-shell .discovery-notes .field-note-row {
+  padding: 14px 2px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.home-shell .discovery-notes .field-note-row:nth-child(even) {
+  width: calc(100% - 12px);
+  margin-left: 12px;
+}
+.home-shell .discovery-notes .field-note-row strong { font-size: 18px; }
+
+/* ---------- Record: quiet by design ---------- */
+.home-shell .quiet-record {
+  width: 100%;
+  margin: var(--section-gap) 0 0;
+  padding: 27px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+.home-shell .quiet-record .section-kicker { display: none !important; }
+.home-shell .quiet-record > .section-heading { margin-bottom: 15px; }
+.home-shell .quiet-record .section-heading h2 { margin: 0; font-size: 21px; }
+.home-shell .quiet-record .record-values {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 0;
   border: 0;
 }
-.home-shell .editorial-record .section-kicker { display: none !important; }
-.home-shell .editorial-record > .section-heading { margin-bottom: 20px; }
-.home-shell .editorial-record .record-values {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 28px 50px;
-  border: 0;
-}
-.home-shell .editorial-record .mini-stat,
-.home-shell .editorial-record .mini-stat + .mini-stat {
-  min-width: 105px;
+.home-shell .quiet-record .mini-stat,
+.home-shell .quiet-record .mini-stat + .mini-stat {
   min-height: 0;
-  padding: 0;
+  padding: 8px 18px 8px 0;
   border: 0;
   background: transparent;
 }
-.home-shell .editorial-record .mini-stat strong { font-size: 25px; }
-.home-shell .editorial-record .mini-stat small { margin-top: 4px; }
+.home-shell .quiet-record .mini-stat + .mini-stat { padding-left: 18px; border-left: 1px solid var(--line-soft); }
+.home-shell .quiet-record .mini-stat-icon { display: none; }
+.home-shell .quiet-record .mini-stat strong { font-size: 24px; letter-spacing: -.04em; }
+.home-shell .quiet-record .mini-stat small { margin-top: 4px; font-size: 11px; }
 
-.home-shell .editorial-practice {
-  width: 80%;
-  margin: var(--editorial-gap) 0 0 10%;
-  padding: 0;
-  border: 0;
-  background: transparent;
+/* ---------- Practice: controls may look like controls ---------- */
+.home-shell .practice-surface {
+  width: 100%;
+  margin: var(--section-gap) 0 0;
+  padding: 24px 24px 22px;
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  background: rgba(255,253,248,.76);
+  box-shadow: 0 7px 18px rgba(31,31,45,.045);
 }
-.home-shell .editorial-practice .section-kicker { display: none !important; }
-.home-shell .editorial-practice .compact-heading { margin-bottom: 25px; }
-.home-shell .editorial-practice .segment-control {
-  gap: 18px;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
+.home-shell .practice-surface .section-kicker { display: none !important; }
+.home-shell .practice-surface .compact-heading { margin-bottom: 18px; }
+.home-shell .practice-surface .compact-heading h2 { margin: 0; font-size: 21px; }
+.home-shell .practice-surface .segment-control {
+  gap: 5px;
+  padding: 5px;
+  border-radius: 12px;
+  background: #ebe5da;
 }
-.home-shell .editorial-practice .segment-button {
-  min-height: 34px;
-  padding: 0 1px;
+.home-shell .practice-surface .segment-button {
+  min-height: 36px;
+  padding: 0 12px;
   border: 0;
-  border-bottom: 1px solid transparent;
-  border-radius: 0;
+  border-radius: 8px;
   background: transparent;
   color: var(--muted);
   box-shadow: none;
   font-size: 11px;
 }
-.home-shell .editorial-practice .segment-button.is-active {
-  border-bottom-color: var(--ink);
-  background: transparent;
+.home-shell .practice-surface .segment-button.is-active {
+  background: var(--surface-strong);
   color: var(--ink);
-  box-shadow: none;
+  box-shadow: 0 3px 9px rgba(31,31,45,.08);
 }
-.home-shell .editorial-practice .practice-weak-action {
-  margin-top: 28px;
-  padding: 12px 0;
+.home-shell .practice-surface .practice-weak-action {
+  margin-top: 20px;
+  padding: 14px 0 0;
   border: 0;
+  border-top: 1px solid var(--line-soft);
 }
+.home-shell .practice-surface .practice-weak-action .rival-letter { font-size: 40px; }
+.home-shell .practice-surface .practice-weak-action .rival-meter,
+.home-shell .practice-surface .practice-weak-action > small { display: none; }
 
 .home-shell .note-box {
-  width: 70%;
-  margin: var(--editorial-gap) 0 0 auto;
-  padding: 4px 0 4px 16px;
+  width: 100%;
+  margin: 30px 0 0;
+  padding: 12px 0 0 14px;
   border: 0;
-  border-left: 1px solid var(--line);
+  border-left: 2px solid var(--line);
   border-radius: 0;
   background: transparent;
+  color: var(--muted);
   font-size: 11px;
 }
 
-@media (max-width: 760px) {
-  .home-shell.editorial-home { --editorial-gap: 64px; }
-  .home-shell .opening-spread,
-  .home-shell .today-section.opening-spread {
-    grid-template-columns: 1fr;
-    grid-template-areas: "copy" "progress" "action";
-    gap: 30px;
-    min-height: 0;
-    padding: 54px 2% 30px !important;
+@media (max-width: 780px) {
+  .home-shell.playable-home { --section-gap: 34px; }
+  .home-shell .quest-board,
+  .home-shell .today-section.quest-board {
+    grid-template-columns: minmax(0,1fr) 205px;
+    gap: 20px 24px;
+    padding: 30px 28px 28px !important;
   }
-  .home-shell .opening-spread::before { right: 24%; height: 48px; }
-  .home-shell .opening-spread::after { right: 2%; font-size: 82px; }
-  .home-shell .opening-spread .hero-copy-block h1 { max-width: 11em; font-size: clamp(36px, 9.8vw, 52px); }
-  .home-shell .opening-spread .opening-progress { width: min(62%, 230px); margin: 0 0 0 auto; }
-  .home-shell .opening-spread .opening-action { margin-top: 2px; }
-
-  .home-shell .editorial-map,
-  .home-shell .editorial-notes,
-  .home-shell .editorial-record,
-  .home-shell .editorial-practice,
-  .home-shell .note-box { width: 100%; margin-left: 0; margin-right: 0; }
-  .home-shell .editorial-map .stage-heading { margin-left: 8%; }
-  .home-shell .editorial-map .stage-grid { padding-left: 54px !important; }
-  .home-shell .editorial-map .route-rail { left: 19px; }
-  .home-shell .editorial-map .stage-rail { left: -54px; width: 44px; }
-  .home-shell .editorial-map .stage-card { min-height: 96px; padding-left: 14px !important; }
-  .home-shell .editorial-map .stage-card:nth-of-type(even) .stage-body { padding-left: 26px; }
-  .home-shell .editorial-practice .config-row { grid-template-columns: 1fr; gap: 24px; }
+  .quest-board-letters { top: 24px; right: 27px; }
+  .quest-board-letters span { width: 42px; height: 42px; font-size: 19px; }
+  .home-shell .quiet-record .record-values { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .home-shell .quiet-record .mini-stat:nth-child(3) { padding-left: 0; border-left: 0; }
 }
 
-@media (max-width: 420px) {
-  .home-shell .system-topbar .brand-mark { font-size: 20px; }
-  .home-shell .system-topbar .brand-text strong { font-size: 13px; }
-  .home-shell .system-topbar .system-nav-button { width: 32px; height: 32px; }
-  .home-shell .opening-spread .hero-copy-block h1 { max-width: 9.4em; font-size: clamp(34px, 10.5vw, 44px); }
-  .home-shell .opening-spread .opening-progress { width: 68%; }
-  .home-shell .editorial-map .stage-card:nth-of-type(even) .stage-body { padding-left: 18px; }
-  .home-shell .editorial-notes .field-notes-heading { align-items: start; }
-  .home-shell .editorial-notes .field-notes-actions { gap: 9px; }
+@media (max-width: 620px) {
+  .home-shell .system-topbar { margin-bottom: 14px; }
+  .home-shell .system-topbar .brand-mark { width: 35px; height: 35px; }
+  .home-shell .system-topbar .brand-text strong { font-size: 14px; }
+  .home-shell .system-topbar .system-nav-button { width: 34px; height: 34px; }
+
+  .home-shell .quest-board,
+  .home-shell .today-section.quest-board {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "progress"
+      "actions";
+    gap: 19px;
+    min-height: 0;
+    padding: 27px 22px 22px !important;
+    border-radius: 18px !important;
+  }
+  .home-shell .quest-board .hero-copy-block h1 { max-width: 11em; font-size: clamp(31px, 9vw, 39px); }
+  .home-shell .quest-board-progress { width: 100%; padding: 15px 14px; }
+  .home-shell .quest-board .quest-board-action { width: 100%; justify-content: space-between; }
+  .quest-board-letters { top: 22px; right: 18px; gap: 5px; opacity: .72; }
+  .quest-board-letters span { width: 34px; height: 34px; border-radius: 10px; font-size: 16px; }
+
+  .home-shell .quest-map .stage-grid { padding-left: 37px !important; }
+  .home-shell .quest-map .route-rail { left: 15px; }
+  .home-shell .quest-map .stage-card,
+  .home-shell .quest-map .stage-card:has(.status-open),
+  .home-shell .quest-map .stage-card[data-map-state="current"] {
+    grid-template-columns: 49px minmax(0,1fr) auto;
+    min-height: 76px;
+    gap: 11px;
+    padding: 12px 5px 12px 12px !important;
+  }
+  .home-shell .quest-map .stage-rail { left: -37px; width: 30px; }
+  .home-shell .quest-map .stage-icon { width: 44px; height: 44px; border-radius: 11px; font-size: 17px; }
+  .home-shell .quest-map .stage-card h3 { font-size: 16px; }
+  .home-shell .quest-map .stage-card[data-map-state="current"] { padding: 14px 10px 14px 12px !important; }
+
+  .home-shell .discovery-notes {
+    width: calc(100% - 12px);
+    margin-left: 12px;
+    padding-left: 14px;
+  }
+  .home-shell .discovery-notes .field-notes-heading { align-items: flex-start; }
+  .home-shell .discovery-notes .field-notes-actions { gap: 8px; }
+
+  .home-shell .practice-surface { padding: 20px 17px; }
+  .home-shell .practice-surface .config-row { grid-template-columns: 1fr; align-items: start; }
+}
+
+@media (max-width: 390px) {
+  .home-shell .system-topbar .topbar-actions { gap: 0; }
+  .home-shell .system-topbar .system-nav-button { width: 32px; }
+  .quest-board-letters span:nth-child(3) { display: none; }
+  .home-shell .quiet-record .mini-stat strong { font-size: 21px; }
 }
