@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="116" fill="#151a2d"/>
-  <circle cx="256" cy="256" r="164" fill="#f7f3ea"/>
-  <path d="M164 152h58v85h67v-85h59v208h-59v-70h-67v70h-58V152Z" fill="#ff625a"/>
-  <circle cx="374" cy="140" r="34" fill="#ffd35a"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ハングル・クエスト">
+  <rect width="512" height="512" rx="112" fill="#171a2b"/>
+  <rect x="70" y="66" width="116" height="18" rx="9" fill="#ff665e"/>
+  <circle cx="407" cy="101" r="27" fill="#ffd45e"/>
+  <rect x="390" y="360" width="46" height="46" rx="13" fill="#91caff"/>
+  <text x="256" y="306" text-anchor="middle" fill="#fffdf8" font-family="Noto Sans KR, Apple SD Gothic Neo, Malgun Gothic, sans-serif" font-size="238" font-weight="800" letter-spacing="-18">한</text>
 </svg>
