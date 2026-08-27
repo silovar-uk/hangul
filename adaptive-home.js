@@ -27,9 +27,7 @@ function setReason(copyBlock, recommendation) {
   if (!reason) {
     reason = document.createElement('p');
     reason.className = 'adaptive-recommendation-reason';
-    const actions = copyBlock.parentElement?.querySelector('.quest-board-actions, .hero-actions');
-    if (actions && actions.parentElement === copyBlock.parentElement) actions.before(reason);
-    else copyBlock.append(reason);
+    copyBlock.append(reason);
   }
   reason.textContent = recommendation.reason;
 }
