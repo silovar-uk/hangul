@@ -3,6 +3,7 @@ import { getDailyGoalProgress, getStageMastery, getWeakItems } from './core.js';
 import {
   CONFUSION_ACTIVE_SCORE,
   getTopConfusions,
+  getDueConfusions,
   getConfusionPairItems,
   getConfusionInsight
 } from './confusion-model.js';
@@ -45,10 +46,29 @@ function weakGlyphs(items) {
   return items.map((item) => item.hangul).filter(Boolean).join('・');
 }
 
-function confusionAction(pair, { optional = false } = {}) {
+function confusionAction(pair, { optional = false, delayed = false } = {}) {
   const items = getConfusionPairItems(pair);
   if (!items) return null;
   const insight = getConfusionInsight(items.correct, items.selected);
+
+  if (delayed) {
+    const days = Math.max(1, pair.daysSinceReview ?? pair.intervalDays ?? 1);
+    return {
+      type: optional ? 'bonus-delayed-confusion' : 'delayed-confusion',
+      action: 'confusion-start',
+      pairKey: pair.key,
+      stageId: items.correct.stageId,
+      count: 3,
+      title: optional ? '今日の5問は完了。' : `${items.correct.hangul}と${items.selected.hangul}、まだ見分けられる？`,
+      support: optional
+        ? `${insight.dimension}を、時間を空けてもう3問。`
+        : `${insight.dimension}を思い出して3問。`,
+      reason: `前回の見分けから${days}日。答えを見直す前に、記憶が残っているか確認します。`,
+      priority: optional ? 91 : 96,
+      optional
+    };
+  }
+
   return {
     type: optional ? 'bonus-confusion' : 'confusion-review',
     action: 'confusion-start',
@@ -79,6 +99,7 @@ export function getNextLearningAction(progress, { dateKey } = {}) {
     limit: 1,
     minScore: CONFUSION_ACTIVE_SCORE
   })[0];
+  const dueConfusion = getDueConfusions(safeProgress, { dateKey, limit: 1 })[0];
 
   if ((safeProgress.sessionsPlayed ?? 0) === 0) {
     return {
@@ -98,9 +119,19 @@ export function getNextLearningAction(progress, { dateKey } = {}) {
     if (action) return action;
   }
 
+  if (!daily.complete && dueConfusion) {
+    const action = confusionAction(dueConfusion, { delayed: true });
+    if (action) return action;
+  }
+
   if (daily.complete) {
     if (activeConfusion) {
       const action = confusionAction(activeConfusion, { optional: true });
+      if (action) return action;
+    }
+
+    if (dueConfusion) {
+      const action = confusionAction(dueConfusion, { optional: true, delayed: true });
       if (action) return action;
     }
 
