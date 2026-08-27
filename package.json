@@ -5,6 +5,6 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node --check app.js && node --check core.js && node --check data.js && node --check lexicon-data.js && node --check learning-hub.js && node --check learning-recommendation.js && node --check adaptive-home.js && node --check confusion-model.js && node --check confusion-observer.js && node --check confusion-practice.js && node --check learning-feedback.js && node --check reference-panel.js && node --check audio-core.js && node --check audio-controller.js && node --check notes-store.js && node --check notes-panel.js && node --check experience-layer.js && node --check interface-polish.js && node --check state-grammar.js && node --check learning-rewards.js"
+    "check": "node --check app.js && node --check core.js && node --check data.js && node --check lexicon-data.js && node --check learning-hub.js && node --check learning-recommendation.js && node --check adaptive-home.js && node --check confusion-model.js && node --check learning-feedback.js && node --check reference-panel.js && node --check audio-core.js && node --check audio-controller.js && node --check notes-store.js && node --check notes-panel.js && node --check experience-layer.js && node --check interface-polish.js && node --check state-grammar.js && node --check learning-rewards.js"
   }
 }
