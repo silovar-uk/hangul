@@ -69,6 +69,38 @@ export function getConfusionState(pair = {}, dateKey) {
   return 'candidate';
 }
 
+export function getConfusionRecallInterval(pair = {}) {
+  if ((pair.totalMistakes ?? 0) < 2) return null;
+  const streak = pair.correctStreak ?? 0;
+  if (streak <= 2) return 1;
+  if (streak <= 4) return 3;
+  if (streak <= 6) return 7;
+  return null;
+}
+
+export function getDueConfusions(progress, { dateKey, limit = 3 } = {}) {
+  return Object.entries(progress?.confusionPairs ?? {})
+    .map(([key, pair]) => {
+      const intervalDays = getConfusionRecallInterval(pair);
+      const anchor = pair.lastSeenAt ?? pair.lastMistakeAt;
+      const daysSinceReview = ageDays(anchor, dateKey ?? anchor);
+      return {
+        key,
+        ...pair,
+        intervalDays,
+        daysSinceReview,
+        overdueDays: intervalDays == null ? 0 : Math.max(0, daysSinceReview - intervalDays),
+        score: getConfusionScore(pair, dateKey),
+        state: getConfusionState(pair, dateKey)
+      };
+    })
+    .filter((pair) => pair.intervalDays != null && pair.daysSinceReview >= pair.intervalDays)
+    .sort((a, b) => b.overdueDays - a.overdueDays
+      || b.daysSinceReview - a.daysSinceReview
+      || (b.totalMistakes ?? 0) - (a.totalMistakes ?? 0))
+    .slice(0, limit);
+}
+
 export function recordConfusionMistake(progress, { correctId, selectedId, dateKey }) {
   if (!correctId || !selectedId || correctId === selectedId) return progress;
   const key = confusionKey(correctId, selectedId);
