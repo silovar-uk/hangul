@@ -90,20 +90,23 @@ function weakStrip(progress, weak) {
   return section;
 }
 
-function syncWeakStrip(home, board, progress, weak) {
+function syncWeakStrip(home, progress, weak) {
   const existing = home.querySelector('.adaptive-weak-strip');
   if (!weak.length) {
     existing?.remove();
     return;
   }
 
+  const location = home.querySelector('.current-location-section, .quest-map');
+  if (!location) return;
+
   const signature = weak.map((item) => `${item.id}:${getItemMastery(progress.itemStats?.[item.id] ?? {})}`).join('|');
-  if (existing?.dataset.signature === signature) return;
+  if (existing?.dataset.signature === signature && existing.parentElement === location) return;
 
   const next = weakStrip(progress, weak);
   next.dataset.signature = signature;
-  if (existing) existing.replaceWith(next);
-  else board.after(next);
+  existing?.remove();
+  location.prepend(next);
 }
 
 function enhanceHome() {
@@ -128,7 +131,7 @@ function enhanceHome() {
     setPrimaryAction(board, recommendation);
   }
 
-  syncWeakStrip(home, board, progress, weak);
+  syncWeakStrip(home, progress, weak);
 }
 
 if (app) {
