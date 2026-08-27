@@ -62,9 +62,10 @@ export function getConfusionScore(pair = {}, dateKey) {
 
 export function getConfusionState(pair = {}, dateKey) {
   const score = getConfusionScore(pair, dateKey);
-  if ((pair.totalMistakes ?? 0) >= 2 && score < RECOVERING_SCORE) return 'resolved';
-  if (score >= ACTIVE_SCORE) return 'active';
-  if ((pair.recoveries ?? 0) > 0 && score >= RECOVERING_SCORE) return 'recovering';
+  const total = pair.totalMistakes ?? 0;
+  if (!total || score < RECOVERING_SCORE) return 'resolved';
+  if (total >= 2 && score >= ACTIVE_SCORE) return 'active';
+  if ((pair.recoveries ?? 0) > 0) return 'recovering';
   return 'candidate';
 }
 
