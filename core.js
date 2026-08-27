@@ -3,12 +3,13 @@ export const DAILY_GOAL = 5;
 
 export function createDefaultProgress() {
   return {
-    version: 2,
+    version: 3,
     xp: 0,
     totalScore: 0,
     unlockedStage: 1,
     stageBest: {},
     itemStats: {},
+    confusionPairs: {},
     activityDates: [],
     dailyStats: {},
     achievements: [],
@@ -30,9 +31,10 @@ export function safeLoadProgress(raw) {
     return {
       ...defaults,
       ...parsed,
-      version: 2,
+      version: 3,
       stageBest: parsed.stageBest ?? {},
       itemStats: parsed.itemStats ?? {},
+      confusionPairs: parsed.confusionPairs ?? {},
       activityDates: Array.isArray(parsed.activityDates) ? parsed.activityDates : [],
       dailyStats: parsed.dailyStats ?? {},
       achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
