@@ -39,12 +39,14 @@ function setPrimaryAction(board, recommendation) {
   primary.dataset.action = recommendation.action;
   if (recommendation.stageId) primary.dataset.stage = recommendation.stageId;
   else delete primary.dataset.stage;
+  if (recommendation.pairKey) primary.dataset.pair = recommendation.pairKey;
+  else delete primary.dataset.pair;
 
   const label = primary.querySelector('span');
   if (label) {
-    label.textContent = recommendation.action === 'weak-start'
-      ? '苦手を復習'
-      : recommendation.optional ? 'もう5問' : 'この5問を始める';
+    if (recommendation.action === 'confusion-start') label.textContent = '3問だけ見分ける';
+    else if (recommendation.action === 'weak-start') label.textContent = '苦手を復習';
+    else label.textContent = recommendation.optional ? 'もう5問' : 'この5問を始める';
   }
   primary.setAttribute('aria-label', `${recommendation.title} ${recommendation.reason}`);
 }
@@ -120,7 +122,7 @@ function enhanceHome() {
   const progress = loadProgress();
   const recommendation = getNextLearningAction(progress);
   const weak = getWeakPreview(progress, 3);
-  const signature = `${recommendation.type}|${recommendation.stageId}|${recommendation.reason}`;
+  const signature = `${recommendation.type}|${recommendation.stageId}|${recommendation.pairKey ?? ''}|${recommendation.reason}`;
 
   if (board.dataset.adaptiveSignature !== signature) {
     board.dataset.adaptiveSignature = signature;

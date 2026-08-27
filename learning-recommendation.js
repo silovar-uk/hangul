@@ -1,5 +1,11 @@
 import { STAGES } from './data.js';
 import { getDailyGoalProgress, getStageMastery, getWeakItems } from './core.js';
+import {
+  CONFUSION_ACTIVE_SCORE,
+  getTopConfusions,
+  getConfusionPairItems,
+  getConfusionInsight
+} from './confusion-model.js';
 
 const MASTERY_THRESHOLD = 75;
 
@@ -39,6 +45,28 @@ function weakGlyphs(items) {
   return items.map((item) => item.hangul).filter(Boolean).join('・');
 }
 
+function confusionAction(pair, { optional = false } = {}) {
+  const items = getConfusionPairItems(pair);
+  if (!items) return null;
+  const insight = getConfusionInsight(items.correct, items.selected);
+  return {
+    type: optional ? 'bonus-confusion' : 'confusion-review',
+    action: 'confusion-start',
+    pairKey: pair.key,
+    stageId: items.correct.stageId,
+    count: 3,
+    title: optional ? '今日の5問は完了。' : `${items.correct.hangul}と${items.selected.hangul}を3問だけ。`,
+    support: optional
+      ? `${items.correct.hangul}と${items.selected.hangul}の${insight.dimension}だけ、もう一度。`
+      : `${insight.dimension}の違いを見る。`,
+    reason: optional
+      ? `続けるなら、最近${pair.recentMistakes ?? pair.totalMistakes ?? 1}回取り違えた組を優先します。`
+      : `最近${pair.recentMistakes ?? pair.totalMistakes ?? 1}回取り違えています。`,
+    priority: optional ? 92 : 98,
+    optional
+  };
+}
+
 export function getNextLearningAction(progress, { dateKey } = {}) {
   const safeProgress = progress ?? {};
   const daily = getDailyGoalProgress(safeProgress, 5, dateKey);
@@ -46,6 +74,11 @@ export function getNextLearningAction(progress, { dateKey } = {}) {
   const weakWrongCount = weak.filter((item) => safeProgress.itemStats?.[item.id]?.lastResult === 'wrong').length;
   const stage = currentStage(safeProgress);
   const stageMastery = getStageMastery(stage, safeProgress.itemStats ?? {});
+  const activeConfusion = getTopConfusions(safeProgress, {
+    dateKey,
+    limit: 1,
+    minScore: CONFUSION_ACTIVE_SCORE
+  })[0];
 
   if ((safeProgress.sessionsPlayed ?? 0) === 0) {
     return {
@@ -60,7 +93,17 @@ export function getNextLearningAction(progress, { dateKey } = {}) {
     };
   }
 
+  if (!daily.complete && activeConfusion) {
+    const action = confusionAction(activeConfusion);
+    if (action) return action;
+  }
+
   if (daily.complete) {
+    if (activeConfusion) {
+      const action = confusionAction(activeConfusion, { optional: true });
+      if (action) return action;
+    }
+
     if (weak.length) {
       return {
         type: 'bonus-weak',
