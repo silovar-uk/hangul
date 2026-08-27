@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { STAGES } from '../data.js';
 import { createDefaultProgress } from '../core.js';
+import { recordConfusionMistake } from '../confusion-model.js';
 import { getNextLearningAction, getWeakPreview } from '../learning-recommendation.js';
 
 const DATE = '2026-08-28';
@@ -15,7 +16,25 @@ test('first-time learner gets one simple five-question start', () => {
   assert.equal(action.stageId, STAGES[0].id);
 });
 
-test('multiple recent mistakes push weak review to the front', () => {
+test('active confusion outranks generic weak review', () => {
+  let progress = createDefaultProgress();
+  progress.sessionsPlayed = 2;
+  const correct = STAGES[1].items[1];
+  const selected = STAGES[1].items[2];
+  progress = recordConfusionMistake(progress, { correctId: correct.id, selectedId: selected.id, dateKey: DATE });
+  progress = recordConfusionMistake(progress, { correctId: correct.id, selectedId: selected.id, dateKey: DATE });
+  progress.itemStats[correct.id] = { seen: 4, correct: 1, wrong: 3, avgMs: 3200, lastResult: 'wrong' };
+  progress.itemStats[selected.id] = { seen: 3, correct: 1, wrong: 2, avgMs: 3000, lastResult: 'wrong' };
+
+  const action = getNextLearningAction(progress, { dateKey: DATE });
+  assert.equal(action.type, 'confusion-review');
+  assert.equal(action.action, 'confusion-start');
+  assert.equal(action.count, 3);
+  assert.ok(action.pairKey);
+  assert.match(action.reason, /取り違え/);
+});
+
+test('multiple recent mistakes push weak review to the front when there is no active pair', () => {
   const progress = createDefaultProgress();
   progress.sessionsPlayed = 2;
   progress.itemStats[STAGES[0].items[0].id] = { seen: 3, correct: 1, wrong: 2, avgMs: 3000, lastResult: 'wrong' };
@@ -48,7 +67,21 @@ test('near-mastered stage becomes the next best action', () => {
   assert.match(action.reason, /習熟/);
 });
 
-test('daily completion makes further practice explicitly optional', () => {
+test('daily completion makes active confusion explicitly optional', () => {
+  let progress = createDefaultProgress();
+  progress.sessionsPlayed = 2;
+  progress.dailyStats[DATE] = { answered: 5, correct: 5, score: 500, sessions: 1 };
+  const correct = STAGES[1].items[1];
+  const selected = STAGES[1].items[2];
+  progress = recordConfusionMistake(progress, { correctId: correct.id, selectedId: selected.id, dateKey: DATE });
+  progress = recordConfusionMistake(progress, { correctId: correct.id, selectedId: selected.id, dateKey: DATE });
+
+  const action = getNextLearningAction(progress, { dateKey: DATE });
+  assert.equal(action.type, 'bonus-confusion');
+  assert.equal(action.optional, true);
+});
+
+test('daily completion without active confusion stays an optional bonus', () => {
   const progress = createDefaultProgress();
   progress.sessionsPlayed = 2;
   progress.dailyStats[DATE] = { answered: 5, correct: 5, score: 500, sessions: 1 };
