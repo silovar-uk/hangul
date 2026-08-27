@@ -12,6 +12,7 @@
       "topbar topbar"
       "starter starter"
       "quest quest"
+      "weak weak"
       "route record"
       "route practice"
       "expansion expansion"
@@ -25,6 +26,7 @@
   .home-shell.playable-home > .starter-guide { grid-area: starter; }
   .home-shell.playable-home > .quest-board,
   .home-shell.playable-home > .today-section.quest-board { grid-area: quest; }
+  .home-shell.playable-home > .adaptive-weak-strip { grid-area: weak; }
   .home-shell.playable-home > .quest-map,
   .home-shell.playable-home > .current-location-section.quest-map { grid-area: route; }
   .home-shell.playable-home > .quiet-record { grid-area: record; }
@@ -185,9 +187,162 @@
   }
 }
 
+/* Adaptive guidance lives in the composition layer rather than another patch stylesheet. */
+.home-shell .quest-board .hero-copy-block[data-adaptive-label]::before {
+  content: attr(data-adaptive-label);
+}
+
+.home-shell .adaptive-recommendation-reason {
+  max-width: 34rem;
+  margin: 11px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 680;
+  line-height: 1.6;
+}
+
+.home-shell .adaptive-weak-strip {
+  display: grid;
+  grid-template-columns: minmax(130px, .75fr) minmax(0, 1.5fr) auto;
+  align-items: center;
+  gap: 18px;
+  margin: 14px 0 0;
+  padding: 16px 2px 15px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.home-shell .adaptive-weak-copy span,
+.home-shell .adaptive-weak-copy strong {
+  display: block;
+}
+
+.home-shell .adaptive-weak-copy span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+
+.home-shell .adaptive-weak-copy strong {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 760;
+}
+
+.home-shell .adaptive-weak-glyphs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.home-shell .adaptive-weak-glyph {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding-right: 12px;
+  border-right: 1px solid var(--line-soft);
+}
+
+.home-shell .adaptive-weak-glyph:last-child {
+  padding-right: 0;
+  border-right: 0;
+}
+
+.home-shell .adaptive-weak-glyph b {
+  min-width: 32px;
+  font-size: 27px;
+  font-weight: 790;
+  line-height: 1;
+}
+
+.home-shell .adaptive-weak-glyph small {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 680;
+  line-height: 1.45;
+}
+
+.home-shell .adaptive-weak-action {
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 780;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.home-shell .adaptive-weak-action:hover {
+  border-color: rgba(23,26,43,.42);
+  background: rgba(255,255,255,.46);
+  transform: translateY(-1px);
+}
+
+.home-shell .adaptive-weak-action:active {
+  transform: translateY(0) scale(.985);
+}
+
 /* The composition deliberately collapses back to the proven single-column flow. */
 @media (max-width: 899px) {
   .home-shell.playable-home {
     display: block;
   }
+
+  .home-shell .adaptive-weak-strip {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "copy action"
+      "glyphs glyphs";
+    gap: 12px 16px;
+    margin-top: 12px;
+  }
+
+  .home-shell .adaptive-weak-copy { grid-area: copy; }
+  .home-shell .adaptive-weak-glyphs { grid-area: glyphs; }
+  .home-shell .adaptive-weak-action { grid-area: action; }
+}
+
+@media (max-width: 520px) {
+  .home-shell .adaptive-recommendation-reason {
+    margin-top: 8px;
+    font-size: 10px;
+  }
+
+  .home-shell .adaptive-weak-strip {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "glyphs"
+      "action";
+    gap: 10px;
+    padding: 14px 0 16px;
+  }
+
+  .home-shell .adaptive-weak-glyphs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .home-shell .adaptive-weak-glyph {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 0 9px;
+    text-align: center;
+  }
+
+  .home-shell .adaptive-weak-glyph:first-child { padding-left: 0; }
+  .home-shell .adaptive-weak-glyph:last-child { padding-right: 0; }
+  .home-shell .adaptive-weak-glyph b { font-size: 25px; }
+  .home-shell .adaptive-weak-action { width: 100%; min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-shell .adaptive-weak-action { transition: none !important; }
 }
