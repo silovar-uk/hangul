@@ -22,17 +22,20 @@ test('default progress is safe to mutate', () => {
   const a = createDefaultProgress();
   const b = createDefaultProgress();
   a.stageBest.test = 90;
+  a.confusionPairs.test = { totalMistakes: 1 };
   a.settings.autoAdvance = true;
   assert.equal(b.stageBest.test, undefined);
+  assert.equal(b.confusionPairs.test, undefined);
   assert.equal(b.settings.autoAdvance, false);
 });
 
 test('old and broken storage are safely migrated', () => {
   assert.deepEqual(safeLoadProgress('{bad'), createDefaultProgress());
-  const migrated = safeLoadProgress(JSON.stringify({ xp: 50, itemStats: {} }));
-  assert.equal(migrated.version, 2);
+  const migrated = safeLoadProgress(JSON.stringify({ version: 2, xp: 50, itemStats: {} }));
+  assert.equal(migrated.version, 3);
   assert.equal(migrated.xp, 50);
   assert.deepEqual(migrated.dailyStats, {});
+  assert.deepEqual(migrated.confusionPairs, {});
 });
 
 test('levels rise with experience', () => {
