@@ -19,6 +19,14 @@ import {
   evaluateAchievements,
   todayKey
 } from './core.js';
+import {
+  recordConfusionMistake,
+  recordConfusionRecovery,
+  getConfusionPairItems,
+  getConfusionScore,
+  getConfusionState,
+  getConfusionInsight
+} from './confusion-model.js';
 
 const app = document.querySelector('#app');
 const ACHIEVEMENTS = {
@@ -245,6 +253,7 @@ function handleAction(event) {
   if (action === 'quick-start') startSession(target.dataset.stage, 5, false);
   if (action === 'stage-start') startSession(target.dataset.stage, selectedLength, false);
   if (action === 'weak-start') startWeakSession();
+  if (action === 'confusion-start') startConfusionSession(target.dataset.pair);
   if (action === 'direction') {
     selectedDirection = target.dataset.value;
     progress.lastDirection = selectedDirection;
@@ -281,16 +290,44 @@ function startRivalRematch(items) {
   beginSession({ stage, pool: choicePool, forcedItems: items, count: Math.max(5, items.length * 2), weakOnly: true, modeLabel: 'ライバル再戦' });
 }
 
-function beginSession({ stage, pool, count, weakOnly, forcedItems = null, modeLabel = '' }) {
+function startConfusionSession(pairKey) {
+  const pair = progress.confusionPairs?.[pairKey];
+  const items = getConfusionPairItems(pair);
+  if (!pair || !items) {
+    startWeakSession();
+    return;
+  }
+
+  const stage = getStage(items.correct.stageId) ?? findRecommendedStage();
+  const forcedItems = [items.correct, items.selected, items.correct];
+  beginSession({
+    stage,
+    pool: [items.correct, items.selected],
+    forcedItems,
+    count: 3,
+    weakOnly: true,
+    modeLabel: `見分ける：${items.correct.hangul} ↔ ${items.selected.hangul}`,
+    directionOverride: 'kana-to-hangul',
+    confusionPair: {
+      key: pairKey,
+      correctId: pair.correctId,
+      selectedId: pair.selectedId,
+      beforeScore: getConfusionScore(pair, todayKey())
+    }
+  });
+}
+
+function beginSession({ stage, pool, count, weakOnly, forcedItems = null, modeLabel = '', directionOverride = null, confusionPair = null }) {
   const safePool = pool.length >= 2 ? pool : stage.items;
+  const sessionDirection = directionOverride ?? selectedDirection;
   const questions = forcedItems?.length
     ? Array.from({ length: count }, (_, index) => createQuestion({
         item: forcedItems[index % forcedItems.length],
         items: safePool,
-        direction: selectedDirection,
+        direction: sessionDirection,
         index
       }))
-    : buildSession({ items: safePool, itemStats: progress.itemStats, count, direction: selectedDirection });
+    : buildSession({ items: safePool, itemStats: progress.itemStats, count, direction: sessionDirection });
   const initialMastery = Object.fromEntries(safePool.map((item) => [item.id, getItemMastery(progress.itemStats[item.id])]));
 
   session = {
@@ -298,6 +335,7 @@ function beginSession({ stage, pool, count, weakOnly, forcedItems = null, modeLa
     pool: safePool,
     questions,
     baseCount: count,
+    direction: sessionDirection,
     index: 0,
     score: 0,
     combo: 0,
@@ -319,6 +357,7 @@ function beginSession({ stage, pool, count, weakOnly, forcedItems = null, modeLa
     retryAdded: 0,
     weakOnly,
     modeLabel,
+    confusionPair,
     recoveryRemaining: 0,
     resultApplied: false,
     unlockedBefore: progress.unlockedStage,
@@ -428,6 +467,7 @@ function answerQuestion(choiceId) {
   const elapsedMs = Math.max(250, performance.now() - session.answerStartedAt);
   const nextCombo = isCorrect ? session.combo + 1 : 0;
   const points = calculateAnswerScore({ isCorrect, elapsedMs, combo: nextCombo });
+  const dateKey = todayKey();
 
   session.answered = true;
   session.selectedChoiceId = choiceId;
@@ -446,19 +486,29 @@ function answerQuestion(choiceId) {
     session.focus = Math.min(100, session.focus + (session.recoveryRemaining > 0 ? 10 : 5));
     session.score += points.score;
     if (session.recoveryRemaining > 0) session.recoveryRemaining -= 1;
+    progress = recordConfusionRecovery(progress, {
+      correctId: question.item.id,
+      choiceIds: question.choices.map((choice) => choice.id),
+      dateKey
+    });
   } else {
     session.combo = 0;
     session.wrong += 1;
     session.focus = Math.max(0, session.focus - 24);
     session.misses.push({ ...question.item, stageId: question.item.stageId ?? session.stage.id });
-    if (!question.isRetry) scheduleRetry(question.item);
+    progress = recordConfusionMistake(progress, {
+      correctId: question.item.id,
+      selectedId: choiceId,
+      dateKey
+    });
+    if (!question.isRetry && !session.confusionPair) scheduleRetry(question.item);
     if (session.focus === 0) {
       session.focus = 48;
       session.recoveryRemaining = 2;
     }
   }
 
-  progress.itemStats[question.item.id] = updateItemStat(progress.itemStats[question.item.id], isCorrect, elapsedMs);
+  progress.itemStats[question.item.id] = updateItemStat(progress.itemStats[question.item.id], isCorrect, elapsedMs, dateKey);
   saveProgress();
   renderGame();
 }
@@ -469,7 +519,7 @@ function scheduleRetry(item) {
   const retryQuestion = createQuestion({
     item,
     items: session.pool,
-    direction: selectedDirection,
+    direction: session.direction,
     index: insertAt,
     isRetry: true
   });
@@ -508,23 +558,25 @@ function finishSession() {
   const xp = Math.max(10, Math.round(session.score / 10));
 
   if (!session.resultApplied) {
-    progress = applySessionResult(progress, {
-      stageId: session.stage.id,
-      stageNumber: session.stage.number,
-      totalStages: STAGES.length,
-      accuracy,
-      xp,
-      score: session.score,
-      total,
-      correct: session.correct,
-      maxCombo: session.maxCombo,
-      avgMs,
-      direction: selectedDirection,
-      baseCount: session.baseCount
-    });
-    const evaluated = evaluateAchievements(progress);
-    progress = evaluated.progress;
-    session.newAchievements = evaluated.newIds;
+    if (!session.confusionPair) {
+      progress = applySessionResult(progress, {
+        stageId: session.stage.id,
+        stageNumber: session.stage.number,
+        totalStages: STAGES.length,
+        accuracy,
+        xp,
+        score: session.score,
+        total,
+        correct: session.correct,
+        maxCombo: session.maxCombo,
+        avgMs,
+        direction: session.direction,
+        baseCount: session.baseCount
+      });
+      const evaluated = evaluateAchievements(progress);
+      progress = evaluated.progress;
+      session.newAchievements = evaluated.newIds;
+    }
     session.resultApplied = true;
     saveProgress();
   }
@@ -545,6 +597,32 @@ function quitGame() {
   });
 }
 
+function confusionResultSummary() {
+  if (!session.confusionPair) return '';
+  const pair = progress.confusionPairs?.[session.confusionPair.key];
+  const items = getConfusionPairItems(pair ?? session.confusionPair);
+  if (!pair || !items) return '';
+  const after = getConfusionScore(pair, todayKey());
+  const before = session.confusionPair.beforeScore ?? after;
+  const state = getConfusionState(pair, todayKey());
+  const insight = getConfusionInsight(items.correct, items.selected);
+  const stateCopy = state === 'resolved'
+    ? 'いったん見分けられる状態になりました。'
+    : state === 'recovering'
+      ? '混同は弱まりつつあります。次回もう一度確認。'
+      : 'まだ混同が残っています。少し時間を空けて再確認。';
+  return `
+    <section class="confusion-result" aria-label="混同の変化">
+      <span>WHAT CHANGED</span>
+      <div class="confusion-result-pair"><b>${items.correct.hangul}</b><i>↔</i><b>${items.selected.hangul}</b></div>
+      <strong>${insight.dimension}を3問で確認。</strong>
+      <p>${insight.clue}</p>
+      <div class="confusion-result-delta"><small>混同スコア</small><b>${before} → ${after}</b></div>
+      <em>${stateCopy}</em>
+    </section>
+  `;
+}
+
 function renderResult() {
   const total = session.correct + session.wrong;
   const accuracy = total ? Math.round((session.correct / total) * 100) : 0;
@@ -553,7 +631,7 @@ function renderResult() {
     : 0;
   const rank = accuracy === 100 ? 'S' : accuracy >= 90 ? 'A' : accuracy >= 75 ? 'B' : accuracy >= 60 ? 'C' : 'D';
   const uniqueMisses = [...new Map(session.misses.map((item) => [item.id, item])).values()];
-  const unlockedNext = progress.unlockedStage > session.unlockedBefore;
+  const unlockedNext = !session.confusionPair && progress.unlockedStage > session.unlockedBefore;
   const gains = [...session.answeredItemIds]
     .map((id) => {
       const item = ALL_ITEMS.find((entry) => entry.id === id) ?? session.pool.find((entry) => entry.id === id);
@@ -569,12 +647,14 @@ function renderResult() {
   app.innerHTML = `
     <main class="app-shell result-shell">
       ${topbar(true)}
-      ${accuracy === 100 ? confetti() : ''}
+      ${accuracy === 100 && !session.confusionPair ? confetti() : ''}
       <section class="result-card rank-${rank.toLowerCase()}">
         <div class="result-rank"><small>RANK</small><strong>${rank}</strong></div>
-        <span class="result-eyebrow">QUEST COMPLETE</span>
-        <h1>${accuracy === 100 ? 'ノーミス。完全攻略！' : accuracy >= 70 ? 'クエストクリア！' : 'ライバルが見つかった。'}</h1>
-        <p>${unlockedNext ? `STAGE ${session.stage.number + 1} が開きました。` : `${session.stage.title}の結果です。`}</p>
+        <span class="result-eyebrow">${session.confusionPair ? 'COMPARE COMPLETE' : 'QUEST COMPLETE'}</span>
+        <h1>${session.confusionPair ? '違いを見分け直した。' : accuracy === 100 ? 'ノーミス。完全攻略！' : accuracy >= 70 ? 'クエストクリア！' : 'ライバルが見つかった。'}</h1>
+        <p>${session.confusionPair ? '点数より、取り違えが弱まったかを見る。' : unlockedNext ? `STAGE ${session.stage.number + 1} が開きました。` : `${session.stage.title}の結果です。`}</p>
+
+        ${confusionResultSummary()}
 
         <div class="result-stats">
           ${resultStat('スコア', session.score.toLocaleString(), '⚡')}
@@ -583,15 +663,17 @@ function renderResult() {
           ${resultStat('平均回答', `${(avgMs / 1000).toFixed(1)}秒`, '⏱')}
         </div>
 
-        <div class="daily-result ${daily.complete ? 'is-complete' : ''}">
-          <div><span>今日のミッション</span><strong>${daily.complete ? 'クリア！' : `あと${daily.remaining}問`}</strong></div>
-          <div class="daily-result-track"><span style="width:${daily.ratio * 100}%"></span></div>
-          <b>${Math.min(daily.answered, DAILY_GOAL)}/${DAILY_GOAL}</b>
-        </div>
+        ${session.confusionPair ? '' : `
+          <div class="daily-result ${daily.complete ? 'is-complete' : ''}">
+            <div><span>今日のミッション</span><strong>${daily.complete ? 'クリア！' : `あと${daily.remaining}問`}</strong></div>
+            <div class="daily-result-track"><span style="width:${daily.ratio * 100}%"></span></div>
+            <b>${Math.min(daily.answered, DAILY_GOAL)}/${DAILY_GOAL}</b>
+          </div>
+        `}
 
         ${gains.length ? `
           <div class="growth-panel"><h3>伸びた文字</h3><div class="growth-list">
-            ${gains.map(({ item, after, gain }) => `<div><b>${item.hangul}</b><span>${item.reading}</span><em>+${gain}</em><small>習熟 ${after}%</small></div>`).join('')}
+            ${gains.map(({ item, before, after }) => `<div><b>${item.hangul}</b><span>${item.reading}</span><em>${before}% → ${after}%</em><small>習熟 ${after}%</small></div>`).join('')}
           </div></div>
         ` : ''}
 
@@ -602,14 +684,21 @@ function renderResult() {
         ${session.newAchievements.length ? `<div class="achievement-unlocks"><h3>称号を獲得</h3>${session.newAchievements.map(achievementCard).join('')}</div>` : ''}
 
         <div class="result-actions">
-          ${uniqueMisses.length ? '<button class="secondary-button" data-action="rival-rematch">ライバル再戦</button>' : '<button class="secondary-button" data-action="retry">もう一度</button>'}
+          ${session.confusionPair
+            ? '<button class="secondary-button" data-action="retry">もう3問</button>'
+            : uniqueMisses.length
+              ? '<button class="secondary-button" data-action="rival-rematch">ライバル再戦</button>'
+              : '<button class="secondary-button" data-action="retry">もう一度</button>'}
           ${unlockedNext ? '<button class="primary-button" data-action="next-stage">次のステージ <span>→</span></button>' : '<button class="primary-button" data-action="result-home">ホームへ <span>→</span></button>'}
         </div>
       </section>
     </main>
   `;
   bindCommonEvents();
-  document.querySelector('[data-action="retry"]')?.addEventListener('click', () => startSession(session.stage.id, session.baseCount, session.weakOnly));
+  document.querySelector('[data-action="retry"]')?.addEventListener('click', () => {
+    if (session.confusionPair) startConfusionSession(session.confusionPair.key);
+    else startSession(session.stage.id, session.baseCount, session.weakOnly);
+  });
   document.querySelector('[data-action="rival-rematch"]')?.addEventListener('click', () => startRivalRematch(uniqueMisses));
   document.querySelector('[data-action="next-stage"]')?.addEventListener('click', () => startSession(STAGES[session.stage.number].id, selectedLength, false));
   document.querySelector('[data-action="result-home"]')?.addEventListener('click', () => { view = 'home'; session = null; render(); });
