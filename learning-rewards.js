@@ -164,7 +164,8 @@ function enhanceGrowthPanel(result, growthItems) {
       item.gainNode.textContent = item.newlyMastered ? '見分け方が定着' : '見分け方が前進';
     }
     if (item.masteryNode) {
-      item.masteryNode.textContent = `習熟 ${item.after}%`;
+      item.masteryNode.textContent = `習熟 ${item.before}% → ${item.after}%`;
+      item.masteryNode.setAttribute('aria-label', `習熟度が${item.before}パーセントから${item.after}パーセントへ`);
     }
   });
 }
