@@ -8,6 +8,10 @@ function numberFrom(value = '') {
   return match ? Number(match[0]) : 0;
 }
 
+function numbersFrom(value = '') {
+  return [...String(value).replaceAll(',', '').matchAll(/-?\d+(?:\.\d+)?/g)].map((match) => Number(match[0]));
+}
+
 function loadHomeSnapshot() {
   try {
     const raw = sessionStorage.getItem(HOME_SNAPSHOT_KEY);
@@ -96,9 +100,12 @@ function readGrowthItems(result) {
     const reading = row.querySelector('span')?.textContent?.trim() || '';
     const gainNode = row.querySelector('em');
     const masteryNode = row.querySelector('small');
-    const gain = numberFrom(gainNode?.textContent ?? '0');
+    const gainText = gainNode?.textContent ?? '0';
     const after = numberFrom(masteryNode?.textContent ?? '0');
-    const before = Math.max(0, after - gain);
+    const deltaNumbers = numbersFrom(gainText);
+    const hasBeforeAfter = gainText.includes('→') && deltaNumbers.length >= 2;
+    const before = hasBeforeAfter ? deltaNumbers[0] : Math.max(0, after - numberFrom(gainText));
+    const gain = hasBeforeAfter ? Math.max(0, deltaNumbers[1] - deltaNumbers[0]) : numberFrom(gainText);
     const newlyMastered = before < MASTERY_THRESHOLD && after >= MASTERY_THRESHOLD;
     return { row, glyph, reading, gainNode, masteryNode, gain, after, before, newlyMastered };
   });
@@ -177,6 +184,13 @@ function enhanceResult() {
 
   const growthItems = readGrowthItems(result);
   enhanceGrowthPanel(result, growthItems);
+
+  // Confusion practice already has one dedicated WHAT CHANGED reflection.
+  // Do not stack a second generic reward summary on the same result.
+  if (result.querySelector('.confusion-result')) {
+    card.dataset.learningRewardReady = 'true';
+    return;
+  }
 
   const copy = resultRewardCopy(result, growthItems);
   if (copy) {
